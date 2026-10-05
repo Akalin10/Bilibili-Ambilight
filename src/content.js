@@ -24,6 +24,8 @@
     }
     document.body.classList.toggle('bilibili-ambilight-bangumi',!!instance && app.player.isBangumiPage());
     document.body.classList.toggle('bilibili-ambilight-list',!!instance && app.player.isListPage());
+    app.syncBewlyCompatibility?.(!!instance);
+    app.syncVoteCompatibility?.(!!instance);
     if(location.href!==lastUrl){lastUrl=location.href;instance?.onRefresh();}
   }
   function queue(){if(!stopped && queued===null)queued=setTimeout(reconcile,100);}
@@ -51,6 +53,8 @@
   window.addEventListener('pagehide',()=>{
     stopped=true;observer?.disconnect();clearInterval(timer);clearTimeout(queued);queued=null;
     instance?.destroy();instance=null;
+    app.syncBewlyCompatibility?.(false);
+    app.syncVoteCompatibility?.(false);
     document.body?.classList.remove('bilibili-ambilight-bangumi');
     document.body?.classList.remove('bilibili-ambilight-list');
   });

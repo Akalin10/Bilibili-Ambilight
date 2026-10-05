@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bilibili Ambilight",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "permissions": [
     "storage"
   ],
@@ -35,12 +35,14 @@
         "src/ambilight/Renderer.js",
         "src/ambilight/WebGLRenderer.js",
         "src/ambilight/AmbientLight.js",
+        "src/bewly-compat.js",
         "src/content.js"
       ],
       "css": [
         "styles/ambilight.css"
       ],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ]
 }

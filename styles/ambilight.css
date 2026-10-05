@@ -65,6 +65,30 @@ body.bilibili-ambilight-page .center-search-container:not(:focus-within) :is(#na
   border-color: transparent !important;
   box-shadow: none !important;
 }
+
+/* Outrank BewlyCat's html.dark.bewly-design and .dark.bewly-design body.
+   The activation classes are removed by AmbientLight when it is disabled. */
+html.bewly-design.bilibili-ambilight-host {
+  background: #0b0b0b !important;
+}
+html.bewly-design body.bilibili-ambilight-page {
+  background: transparent !important;
+  --bew-text-1: #f4f5f7;
+  --bew-text-2: #edf1f5;
+  --bew-text-3: #dce3eb;
+}
+html.bewly-design body.bilibili-ambilight-page :is(.video-pod, .danmaku-wrap, .video-tag-container, .video-info-container, .up-info-container, .video-page-card-small) {
+  color: #edf1f5 !important;
+  --bew-text-1: #f4f5f7;
+  --bew-text-2: #edf1f5;
+  --bew-text-3: #dce3eb;
+}
+html.bewly-design body.bilibili-ambilight-page .video-pod :is(.title, .video-pod__title, .simple-base-item .title, .stat-item, .video-pod__info) {
+  color: #edf1f5 !important;
+}
+html.bewly-design body.bilibili-ambilight-page .video-pod :is(.simple-base-item.active, .simple-base-item:hover, .normal-base-item.active, .normal-base-item:hover) .title {
+  color: var(--bew-theme-color, #00aeec) !important;
+}
 body.bilibili-ambilight-page #nav-searchform:not(:focus-within) :is(.nav-search-input, .nav-search-btn) {
   color: #edf1f5 !important;
 }
