@@ -34,11 +34,11 @@
 
 ## 安装与更新
 
-1. 从 [Releases](https://github.com/Akalin10/Bilibili-Ambilight/releases/latest) 下载 `Bilibili-Ambilight-1.0.0.zip` 并解压。该文件是插件安装包，区别于 GitHub 自动生成的源码 ZIP。
+1. 从 [Releases](https://github.com/Akalin10/Bilibili-Ambilight/releases/latest) 下载 `Bilibili-Ambilight-1.0.0.zip` 并解压。
 2. 打开 `chrome://extensions` 或 `edge://extensions`，启用“开发者模式”。
 3. 选择“加载已解压的扩展程序”，选中含 `manifest.json` 的项目目录，再刷新播放页。
 
-Releases 同时提供签名 CRX 包。可在启用开发者模式的扩展管理页尝试拖入 CRX；若浏览器拒绝或禁用，请使用上述 ZIP 解压加载方式。普通 Windows Chrome 不保证支持商店外 CRX 安装，详见 [Chrome 分发限制](https://developer.chrome.com/docs/extensions/how-to/distribute)。本项目尚未上架扩展商店。
+Releases 同时提供签名 CRX 包。可在启用开发者模式的扩展管理页尝试拖入 CRX；若浏览器拒绝或禁用，请使用上述 ZIP 解压加载方式。
 
 更新文件后，在扩展管理页点击重新加载并刷新播放页。关闭环境光或离开支持的播放页后，扩展会撤销自己的页面样式。
 
