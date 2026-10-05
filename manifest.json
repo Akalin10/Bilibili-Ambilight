@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Bilibili Ambilight",
+  "version": "0.3.25",
+  "permissions": [
+    "storage"
+  ],
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Bilibili Ambilight 设置",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    }
+  },
+  "description": "为 Bilibili 视频播放器添加随画面变化的柔和环境光。",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.bilibili.com/*"
+      ],
+      "js": [
+        "src/settings.js",
+        "src/bilibili/player.js",
+        "src/ambilight/PerformancePolicy.js",
+        "src/ambilight/Projection.js",
+        "src/ambilight/Renderer.js",
+        "src/ambilight/WebGLRenderer.js",
+        "src/ambilight/AmbientLight.js",
+        "src/content.js"
+      ],
+      "css": [
+        "styles/ambilight.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

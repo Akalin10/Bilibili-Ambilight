@@ -1,0 +1,328 @@
+
+.bilibili-ambilight-host {
+  isolation: isolate;
+}
+.bilibili-ambilight {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none !important;
+  user-select: none;
+  opacity: 0;
+}
+.bilibili-ambilight[data-ready="true"] {
+  opacity: var(--ambilight-layer-opacity, var(--ambilight-strength, 0.55));
+}
+.bilibili-ambilight-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scale(var(--ambilight-spread-x, 1.2), var(--ambilight-spread-y, 1.26));
+  filter: none;
+  
+  will-change: transform;
+  pointer-events: none !important;
+}
+
+
+.bilibili-ambilight[data-mode="page"] {
+  
+  --ambilight-layer-opacity: 1;
+  position: absolute;
+  overflow: hidden;
+  contain: strict;
+  
+  mask-image: none;
+}
+.bilibili-ambilight[data-mode="page"] .bilibili-ambilight-canvas {
+  filter: none;
+  
+  transform: none;
+}
+.bilibili-ambilight[data-in-view="false"] { opacity: 0; }
+
+
+body.bilibili-ambilight-page,
+body.bilibili-ambilight-page :is(#app, .video-container-v1, .video-container-v2, .video-page, .left-container, .right-container) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page :is(.danmaku-box, .recommend-list) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page :is(.bili-header, .mini-header) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page :is(.bili-header__bar, .mini-header__content) {
+  background: rgba(22,23,26,.12) !important;
+  
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+}
+body.bilibili-ambilight-page #nav-searchform:not(:focus-within),
+body.bilibili-ambilight-page #nav-searchform:not(:focus-within) :is(.nav-search-content, .nav-search-input, .nav-search-btn),
+body.bilibili-ambilight-page .center-search-container:not(:focus-within) :is(#nav-searchform, .nav-search-content, .nav-search-input, .nav-search-btn) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.bilibili-ambilight-page #nav-searchform:not(:focus-within) :is(.nav-search-input, .nav-search-btn) {
+  color: #edf1f5 !important;
+}
+body.bilibili-ambilight-page #nav-searchform:not(:focus-within) .nav-search-input::placeholder {
+  color: #edf1f5 !important;
+  opacity: .85;
+}
+body.bilibili-ambilight-page :is(.video-title, .up-name, .recommend-title, .video-pod__title, .video-info-title) {
+  color: #f4f5f7 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .85);
+}
+body.bilibili-ambilight-page :is(.video-info-meta, .video-desc-container, .video-toolbar-container) {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
+}
+
+
+html.bilibili-ambilight-host { background: #0b0b0b !important; color-scheme: dark; }
+body.bilibili-ambilight-page {
+  color-scheme: dark;
+  color: #edf1f5;
+  --bg1: #0b0b0b;
+  --bg2: #16171a;
+  --bg3: #292c31;
+  --bg1_float: #202226;
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  --text3: #dce3eb;
+  --graph_bg_regular: #202226;
+  --graph_bg_thin: #16171a;
+  --graph_bg_thick: #292c31;
+  --line_regular: rgba(255,255,255,.15);
+}
+
+
+body.bilibili-ambilight-page :is(#playerWrap, .player-wrap, #bilibili-player, #bilibili-player-placeholder, #bpx-player-container, .bpx-player-container, .bpx-docker-major, .bilibili-player) {
+  box-shadow: none !important;
+}
+
+
+body.bilibili-ambilight-page :is(.video-pod, .danmaku-wrap, .video-tag-container) {
+  background: rgba(22, 23, 26, .24) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, .12) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+body.bilibili-ambilight-page :is(.video-pod__header, .video-pod__body, .video-pod__list,
+  .danmaku-wrap .bpx-player-dm-wrap, .danmaku-wrap .bpx-player-dm-container,
+  .danmaku-wrap .bpx-player-dm-function, .danmaku-wrap .bpx-player-dm-header) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page .video-tag-container {
+  background: rgba(22, 23, 26, .06) !important;
+  border-radius: 6px;
+}
+body.bilibili-ambilight-page .video-tag-container .tag {
+  background: rgba(22, 23, 26, .18) !important;
+  border-radius: 999px;
+  border-color: rgba(255, 255, 255, .12) !important;
+}
+body.bilibili-ambilight-page .video-tag-container :is(.bgm-tag, .topic-tag, .tag-link) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page .video-tag-container .tag:hover {
+  background: rgba(255, 255, 255, .14) !important;
+}
+
+
+body.bilibili-ambilight-page .danmaku-wrap :is(.bpx-docker-minor, .bui-collapse-body,
+  .bpx-player-dm-management, .bpx-player-dm-load-status, .bpx-player-dm-wrap-child,
+  .bpx-player-filter-wrap, .bpx-player-setting) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page .danmaku-wrap .bui-collapse-header {
+  background: rgba(22, 23, 26, .06) !important;
+}
+body.bilibili-ambilight-page :is(.video-tag-container .show-more-btn,
+  .danmaku-wrap .bpx-player-dm-btn-history,
+  .video-pod .section-tab, .video-pod .section-tab-item) {
+  background: rgba(22, 23, 26, .18) !important;
+}
+body.bilibili-ambilight-page .video-pod .simple-base-item.active {
+  background: rgba(22, 23, 26, .26) !important;
+}
+
+
+.bilibili-ambilight[data-mode="page"][data-ready="true"][data-in-view="true"] { opacity: 1; }
+
+
+body.bilibili-ambilight-page .bpx-player-sending-area {
+  background: rgba(22, 23, 26, .20) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.bilibili-ambilight-page .video-tag-container {
+  box-sizing: border-box;
+  padding: 12px 16px;
+}
+body.bilibili-ambilight-page .video-tag-container .tag-panel {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 10px;
+  margin: 0 !important;
+}
+body.bilibili-ambilight-page .video-tag-container .tag-panel > :is(.tag, .show-more-btn) {
+  float: none !important;
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+
+body.bilibili-ambilight-page :is(.bpx-player-container, .bpx-player-sending-bar) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page .bpx-player-sending-area :is(.bpx-player-dm-root, .bpx-player-video-info) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page .bpx-player-sending-area .bpx-player-video-inputbar {
+  background: rgba(22, 23, 26, .18) !important;
+}
+
+body.bilibili-ambilight-page :is(.bpx-docker-major, .bpx-player-primary-area) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page .bpx-player-sending-area .bpx-player-dm-wrap {
+  background: transparent !important;
+}
+
+
+body.bilibili-ambilight-page :is(#bilibili-player-placeholder-bottom,
+  #bilibili-player-placeholder-bottom-left, #bilibili-player-placeholder-bottom-right) {
+  background: transparent !important;
+}
+
+body.bilibili-ambilight-page.bilibili-ambilight-mini #bilibili-player-placeholder-top {
+  background: transparent !important;
+}
+
+
+body.bilibili-ambilight-page :is(.video-info-container, .video-info-detail, .up-description,
+  .video-page-card-small, .video-toolbar-container, .video-pod, .bpx-player-sending-area) {
+  --text2: #edf1f5;
+  --text3: #edf1f5;
+  --graph_weak: #edf1f5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .95), 0 0 4px rgba(0, 0, 0, .65);
+}
+body.bilibili-ambilight-page :is(.video-info-meta, .video-info-detail, .up-description,
+  .video-page-card-small .upname, .video-page-card-small .playinfo,
+  .bpx-player-video-info, .bpx-player-video-info-online,
+  .bpx-player-dm-input, .bpx-player-dm-hint) {
+  color: #edf1f5 !important;
+}
+body.bilibili-ambilight-page .video-info-container :is(.view-text, .dm-text, .pubdate-ip-text) {
+  color: #edf1f5 !important;
+}
+body.bilibili-ambilight-page .bpx-player-sending-area :is(.bui-danmaku-switch, .bpx-player-dm-hint > *) {
+  color: #edf1f5 !important;
+}
+body.bilibili-ambilight-page .bpx-player-dm-input::placeholder {
+  color: #edf1f5 !important;
+  opacity: 1;
+}
+body.bilibili-ambilight-page .bpx-player-sending-area .bpx-player-dm-btn-send.bui-disabled .bui-area {
+  color: #dce3eb !important;
+}
+body.bilibili-ambilight-page :is(.video-info-meta, .video-toolbar-container, .bpx-player-sending-area) svg {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85));
+}
+
+
+body.bilibili-ambilight-page :is(#comment, .comment-container, .reply-box, bili-comments, bili-comment-box) {
+  --bg1: rgba(22, 23, 26, .18);
+  --bg2: rgba(22, 23, 26, .22);
+  --bg3: rgba(22, 23, 26, .28);
+  --bg1_float: rgba(22, 23, 26, .28);
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  --text3: #dce3eb;
+  --graph_weak: #dce3eb;
+  color: #edf1f5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .85);
+}
+body.bilibili-ambilight-page :is(.reply-box .reply-box-textarea, .reply-box textarea,
+  .reply-box .reply-box-warp, .reply-box .reply-box-tools,
+  .reply-box .reply-box-send, .reply-box .reply-box-emoji, .reply-box .reply-box-at, .reply-box .reply-box-upload) {
+  background: rgba(22, 23, 26, .22) !important;
+  color: #edf1f5 !important;
+  border-color: rgba(255, 255, 255, .22) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.bilibili-ambilight-page .reply-box textarea::placeholder {
+  color: #dce3eb !important;
+  opacity: 1;
+}
+
+
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi :is(#__next, .home-container,
+  .main-container, .plp-layout, .plp-player, .player-left-components) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi :is(.main-container, #danmukuBox) {
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  --text3: #dce3eb;
+  --graph_weak: #dce3eb;
+  color: #edf1f5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .85);
+}
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi :is(#danmukuBox,
+  .plp-r > div, .plp-r > section, [class*="SectionSkeleton_panel"],
+  [class*="PaginatedEpList_root"], section:has([class*="EpisodeVirtualList_scroll"])) {
+  background: rgba(22, 23, 26, .24) !important;
+  box-shadow: none !important;
+}
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi #danmukuBox :is(.bpx-docker-minor,
+  .bui-collapse-header, .bui-collapse-body, .bpx-player-dm-management, .bpx-player-dm-function,
+  .bpx-player-dm-wrap, .bpx-player-dm-load-status, .bpx-player-dm-wrap-child, .bpx-player-setting) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi :is(#bilibili-player-wrap,
+  [class*="video_playerInner"]) { box-shadow: none !important; }
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi :is([class*="EpisodeVirtualList_gridItem"],
+  [class*="EpisodeVirtualList_listItem"]) {
+  background: rgba(22, 23, 26, .18) !important;
+}
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi [class*="EpisodeVirtualList_activeItem"] {
+  background: rgba(0, 174, 236, .8) !important;
+}
+body.bilibili-ambilight-page.bilibili-ambilight-bangumi [class*="BiliHeaderV3_biliHeaderBar"] {
+  background: rgba(22, 23, 26, .12) !important;
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
+}
+
+
+body.bilibili-ambilight-page.bilibili-ambilight-list :is(.playlist-app, .playlist-container,
+  .playlist-container--left, .playlist-container--right, .recommend-list-container) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container {
+  background: rgba(22, 23, 26, .24) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  --text3: #dce3eb;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .85);
+}
+body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container :is(.action-list-header,
+  .action-list-body, .action-list-body-top, .action-list-body-bottom, .action-list,
+  .action-list-inner, .action-list-content) {
+  background: transparent !important;
+}
+body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container .multip-list-item-active {
+  background: rgba(22, 23, 26, .24) !important;
+}

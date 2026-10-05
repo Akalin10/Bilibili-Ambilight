@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bilibili Ambilight 设置</title><link rel="stylesheet" href="styles/popup.css"></head>
+<body>
+<header><h1>环境光</h1></header>
+<form id="settings" inert>
+<label class="toggle"><span>启用环境光</span><input id="enabled" type="checkbox"></label>
+<fieldset class="ambient-controls"><legend>环境光效果</legend>
+<div class="control"><label for="blur">模糊 <output id="blur-value" for="blur"></output></label><input id="blur" type="range" min="0" max="100" step="0.1"></div>
+<div class="control"><label for="spread">扩散 <output id="spread-value" for="spread"></output></label><input id="spread" type="range" min="0" max="4" step="0.001"></div>
+<div class="control"><label for="fadeMs">渐变时长 <output id="fadeMs-value" for="fadeMs"></output></label><input id="fadeMs" type="range" min="0" max="400" step="10"></div>
+</fieldset>
+<details><summary>画面调整</summary><fieldset><legend class="visually-hidden">画面调整</legend>
+<label for="strength">强度 <output id="strength-value"></output></label><input id="strength" type="range" min="0" max="1" step="0.05">
+<label for="saturation">饱和度 <output id="saturation-value"></output></label><input id="saturation" type="range" min="0" max="2" step="0.05">
+<label for="brightness">亮度 <output id="brightness-value"></output></label><input id="brightness" type="range" min="0.3" max="2" step="0.05">
+</fieldset></details>
+<details><summary>性能</summary><fieldset><legend class="visually-hidden">性能</legend>
+<label for="quality">渲染质量</label><select id="quality"><option value="auto">自动调节</option><option value="low">低 · 160×90</option><option value="medium">中 · 320×180</option><option value="high">高 · 480×270</option></select>
+<label for="fpsLimit">帧率上限 <output id="fpsLimit-value"></output></label><input id="fpsLimit" type="range" min="10" max="60" step="1">
+</fieldset></details>
+<footer><button id="reset" type="button">恢复默认</button><span id="status" role="status" aria-live="polite"></span></footer>
+</form><script src="src/settings.js"></script><script src="src/popup.js"></script>
+</body></html>
