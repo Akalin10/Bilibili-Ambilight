@@ -1,6 +1,6 @@
 # Bilibili Ambilight
 
-为 Bilibili 播放页添加随视频画面变化的柔和环境光。适用于 Chrome 和 Microsoft Edge，当前版本 **1.0.4**，无需构建即可加载。
+为 Bilibili 播放页添加随视频画面变化的柔和环境光。适用于 Chrome 和 Microsoft Edge，当前版本 **1.0.1**，无需构建即可加载。
 
 **特别致谢：[WesselKroos/youtube-ambilight](https://github.com/WesselKroos/youtube-ambilight)。** 本项目参考其环境光实现思路，并针对 Bilibili 的播放器和页面布局适配。参考项目采用 MIT 许可证，版权及许可声明见 [第三方说明](THIRD_PARTY_NOTICES.md)。
 
@@ -38,7 +38,7 @@ BewlyCat 自定义宽屏布局暂未适配。
 
 ## 安装与更新
 
-1. 下载本仓库源码 ZIP 并解压，或从 [Releases](https://github.com/Akalin10/Bilibili-Ambilight/releases/latest) 下载已发布的安装包并解压。源码版本与 Releases 安装包版本可能不同。
+1. 从 [Releases](https://github.com/Akalin10/Bilibili-Ambilight/releases/latest) 下载 `Bilibili-Ambilight-1.0.1.zip` 并解压。
 2. 打开 `chrome://extensions` 或 `edge://extensions`，启用“开发者模式”。
 3. 选择“加载已解压的扩展程序”，选中含 `manifest.json` 的项目目录，再刷新播放页。
 
