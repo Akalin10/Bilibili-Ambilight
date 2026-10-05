@@ -6,24 +6,19 @@
 
 ## 效果展示
 
-| 明亮画面 | 柔和色彩 |
+| 示列1 | 示列2 |
 | --- | --- |
-| ![明亮画面环境光](docs/screenshots/ambient-1.png) | ![柔和色彩环境光](docs/screenshots/ambient-2.png) |
+| ![I](docs/screenshots/ambient-1.png) | ![II](docs/screenshots/ambient-2.png) |
 
-| 蓝色画面 | 紫色画面 |
+| 示列3 | 示列4 |
 | --- | --- |
-| ![蓝色画面环境光](docs/screenshots/ambient-3.png) | ![紫色画面环境光](docs/screenshots/ambient-4.png) |
+| ![III](docs/screenshots/ambient-3.png) | ![IV](docs/screenshots/ambient-4.png) |
 
 截图中的视频、页面内容及标识属于相关权利人，仅用于展示扩展效果。
 
 ## 功能
 
 - 根据视频画面生成环境光，提供模糊、扩散和颜色渐变。
-- 使用视频帧回调同步更新，支持自动降低采样分辨率以减少开销。
-- 优先使用 WebGL，初始化或视频上传失败时回退 Canvas2D。
-- 兼容暂停、切换视频、小窗及全屏；小窗保留原播放页的背景位置。
-- 统一播放页的透明面板和文字样式，不受网站原深浅色模式影响。
-- 未聚焦的顶栏搜索框透明，聚焦后恢复网站样式。
 
 ## 支持页面
 
@@ -67,10 +62,8 @@
 
 运行代码位于 `src/`，播放页及菜单样式位于 `styles/`，图标位于 `assets/`。项目不依赖打包工具或第三方运行库；修改文件后重新加载扩展即可验证。
 
-性能取决于设备、浏览器与视频解码方式。遇到卡顿可降低渲染质量或帧率上限。反馈问题时请提供扩展版本、浏览器版本、播放页地址及复现步骤，不要附带账号凭据。
+性能取决于设备、浏览器与视频解码方式。遇到卡顿可降低渲染质量或帧率上限。
 
 ## 许可与参考
 
 软件代码采用 [MIT License](LICENSE)。参考项目为 **[youtube-ambilight](https://github.com/WesselKroos/youtube-ambilight)**，作者 **Wessel Kroos**，核对版本 **2.38.17**。原始 MIT 声明完整保留在 [licenses/youtube-ambilight-MIT.txt](licenses/youtube-ambilight-MIT.txt)。
-
-本项目为非官方扩展。代码许可证不授予 Bilibili 标识或截图中第三方视频素材的权利。
