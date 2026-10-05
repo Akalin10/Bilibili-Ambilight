@@ -18,3 +18,5 @@ node_modules/
 __pycache__/
 .DS_Store
 Thumbs.db
+
+.release/

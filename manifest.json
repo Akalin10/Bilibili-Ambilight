@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bilibili Ambilight",
-  "version": "0.3.25",
+  "version": "1.0.0",
   "permissions": [
     "storage"
   ],
