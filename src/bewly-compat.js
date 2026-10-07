@@ -15,6 +15,15 @@
       color: #f4f5f7 !important;
     }
   `;
+  const badgeCss = `
+    #tags .tag {
+      --bili-comment-tag-color: var(--bili-comment-tag-color-dark, #dce3eb) !important;
+      --bili-comment-tag-bg: var(--bili-comment-tag-bg-dark, #292c31) !important;
+      color: var(--bili-comment-tag-color) !important;
+      background-color: var(--bili-comment-tag-bg) !important;
+      text-shadow: none !important;
+    }
+  `;
   function visitVoteTree(node) {
     if (node.nodeType !== 1 && node.nodeType !== 9 && node.nodeType !== 11) return;
     if (node.nodeType === 1) {
@@ -23,10 +32,10 @@
         if (!watchedRoots.has(root)) {
           watchedRoots.add(root);
           voteObserver.observe(root, {childList: true, subtree: true});
-          if (node.localName === 'bili-comments-vote-card') {
+          if (node.localName === 'bili-comments-vote-card' || ['bili-comment-renderer', 'bili-comment-reply-renderer'].includes(node.localName)) {
             const override = document.createElement('style');
             override.dataset.bilibiliAmbilightCompat = 'vote';
-            override.textContent = voteCss;
+            override.textContent = node.localName === 'bili-comments-vote-card' ? voteCss : badgeCss;
             voteStyles.add(override);
             root.append(override);
           }

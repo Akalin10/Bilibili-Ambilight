@@ -113,6 +113,8 @@ body.bilibili-ambilight-page {
   --bg2: #16171a;
   --bg3: #292c31;
   --bg1_float: #202226;
+  --bg2_float: #292c31;
+  --bg3_float: #34383e;
   --text1: #f4f5f7;
   --text2: #edf1f5;
   --text3: #dce3eb;
@@ -266,6 +268,8 @@ body.bilibili-ambilight-page :is(#comment, .comment-container, .reply-box, bili-
   --bg2: rgba(22, 23, 26, .22);
   --bg3: rgba(22, 23, 26, .28);
   --bg1_float: rgba(22, 23, 26, .28);
+  --bg2_float: rgba(22, 23, 26, .42);
+  --bg3_float: rgba(22, 23, 26, .5);
   --text1: #f4f5f7;
   --text2: #edf1f5;
   --text3: #dce3eb;
@@ -349,4 +353,52 @@ body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container :is(
 }
 body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container .multip-list-item-active {
   background: rgba(22, 23, 26, .24) !important;
+}
+
+body.bilibili-ambilight-page :is(.reply-tag .reply-tag-item, .reply-tag .up-like, .reply-item .up-like, .reply-item .up-liked) {
+  background: rgba(22, 23, 26, .42) !important;
+  color: #edf1f5 !important;
+  border-color: rgba(255, 255, 255, .15) !important;
+  text-shadow: none !important;
+}
+
+body.bilibili-ambilight-page .bpx-player-shadow-progress-area .bpx-player-progress-schedule {
+  background: rgba(22, 23, 26, .3) !important;
+}
+body.bilibili-ambilight-page .bpx-player-shadow-progress-area .bpx-player-progress-schedule-buffer {
+  background: rgba(22, 23, 26, .45) !important;
+}
+body.bilibili-ambilight-page .vip-entry-btn {
+  background: #292c31 !important;
+  color: #dc6d94 !important;
+  text-shadow: none !important;
+}
+
+body.bilibili-ambilight-page .bpx-player-sending-area::before {
+  content: none !important;
+  background: transparent !important;
+}
+
+body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row {
+  box-sizing: border-box;
+  padding-right: 8px;
+}
+body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row .dm-info-dm {
+  flex: 1 1 0 !important;
+  min-width: 0;
+}
+body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row :is(.dm-info-block-btn, .dm-info-protect-btn, .dm-info-recall-btn, .dm-info-report-btn) {
+  position: static !important;
+  flex: 0 0 auto;
+  align-self: center;
+  order: 2;
+  width: auto !important;
+  margin-left: 4px;
+  padding: 0 6px;
+  line-height: 18px;
+  background: rgba(22, 23, 26, .65) !important;
+  text-shadow: none;
+}
+body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row .dm-info-report-btn {
+  order: 1;
 }
