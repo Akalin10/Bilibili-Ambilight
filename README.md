@@ -1,62 +1,59 @@
 # Bilibili Ambilight
 
-为 Bilibili 播放页添加随视频画面变化的柔和环境光。适用于 Chrome 和 Microsoft Edge，当前版本 **1.0.1**，无需构建即可加载。
+为 Bilibili 视频播放器添加**随画面变化的柔和环境光**（Ambilight）的浏览器扩展。播放视频时，插件会实时采样画面边缘的颜色，经过投影、模糊与衰减后铺在播放器四周甚至整页背景上，形成类似电视氛围灯的效果。
 
-**特别致谢：[WesselKroos/youtube-ambilight](https://github.com/WesselKroos/youtube-ambilight)。** 本项目参考其环境光实现思路，并针对 Bilibili 的播放器和页面布局适配。参考项目采用 MIT 许可证，版权及许可声明见 [第三方说明](THIRD_PARTY_NOTICES.md)。
+本项目 fork 自 [WesselKroos/youtube-ambilight](https://github.com/WesselKroos/youtube-ambilight) 的实现思路，页面适配、设置界面与渲染实现均为针对 Bilibili 重写，详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
-## 效果展示
-
-| 示列1 | 示列2 |
-| --- | --- |
-| ![I](docs/screenshots/ambient-1.png) | ![II](docs/screenshots/ambient-2.png) |
-
-| 示列3 | 示列4 |
-| --- | --- |
-| ![III](docs/screenshots/ambient-3.png) | ![IV](docs/screenshots/ambient-4.png) |
-
-截图中的视频、页面内容及标识属于相关权利人，仅用于展示扩展效果。
+> 非官方扩展，与 Bilibili 无隶属关系。
 
 ## 功能
 
-- 根据视频画面生成环境光，提供模糊、扩散和颜色渐变。
-## 支持页面
+- **环境光渲染**：WebGL 优先、Canvas2D 兜底；画面采样 → 边缘投影 → 两级模糊 → 时间平滑
+- **两种背景模式**
+  - 玩家模式：环境光只围绕播放器
+  - 页面模式：环境光延伸到整个页面背景（视频页滚动时依然连续）
+- **亮色模式**：把背景板由黑底换成白底，并可跟随调节顶部搜索条、搜索面板、评论区、弹幕列表、页面滚动条等区域的配色
+- **性能自适应**：自动调节渲染分辨率与帧率，检测掉帧后降级
+- **设置项**：强度 / 模糊 / 扩散 / 渐变时长 / 饱和度 / 亮度 / 渲染质量 / 帧率上限
+- **BewlyCat 兼容**：适配 BewlyCat 深色设计与它的影子根样式
 
-| 类型 | 路径 |
-| --- | --- |
-| 普通视频 | `/video/…` |
-| 番剧、影视播放 | `/bangumi/play/ep…`、`/bangumi/play/ss…` |
-| 稍后再看 | `/list/watchlater` |
-| 收藏夹、合集及播放列表 | `/list/…` |
-| 旧版播放入口 | `/medialist/play/…`、`/watchlater/…` |
+## 安装（开发模式加载）
 
-不适配直播、课堂课程、外链嵌入播放器和活动专题播放页。旧版入口仅在页面包含可识别播放器时生效。
+1. 下载或克隆本仓库到本地任意目录；
+2. 打开 `edge://extensions`（Chrome 为 `chrome://extensions`）；
+3. 打开右上角 **开发者模式**；
+4. 点击 **加载解压缩的扩展**，选择本仓库根目录（含 `manifest.json` 的那一层）；
+5. 打开任意 Bilibili 视频页，点击工具栏中的扩展图标即可调节。
 
-## 安装与更新
+> 修改代码后，需要在扩展管理页点击该扩展的 **刷新** 按钮，并 `Ctrl+F5` 强刷页面，样式改动才会生效。
 
-1. 从 [Releases](https://github.com/Akalin10/Bilibili-Ambilight/releases/latest) 下载 `Bilibili-Ambilight-1.0.1.zip` 并解压。
-2. 打开 `chrome://extensions` 或 `edge://extensions`，启用“开发者模式”。
-3. 选择“加载已解压的扩展程序”，选中含 `manifest.json` 的项目目录，再刷新播放页。
+## 目录结构
 
-更新文件后，在扩展管理页点击重新加载并刷新播放页。关闭环境光或离开支持的播放页后，扩展会撤销自己的页面样式。
+```
+manifest.json           扩展清单（MV3）
+popup.html              设置面板
+src/
+  settings.js           设置项的默认值、归一化、存储与订阅
+  content.js            内容脚本入口：页面识别、挂载/销毁、主题类同步
+  bewly-compat.js       BewlyCat 影子根样式适配
+  bilibili/player.js    Bilibili 页面结构与播放器定位
+  ambilight/
+    AmbientLight.js     环境光主控：生命周期、几何、调度
+    PerformancePolicy.js 自适应画质与帧率策略
+    Projection.js       采样映射与盒式模糊
+    Renderer.js         Canvas2D 渲染器
+    WebGLRenderer.js    WebGL 渲染器
+styles/
+  ambilight.css         页面样式与亮色模式覆盖
+  popup.css             设置面板样式
+assets/                 图标与图标导出脚本
+licenses/               第三方许可原文
+```
 
-## 设置
+## 隐私
 
-点击扩展图标打开设置，修改后自动保存。
+扩展不收集、不传输任何数据；所有设置仅保存在浏览器本地（`chrome.storage.local`）。详见 [PRIVACY.md](PRIVACY.md)。
 
-| 设置 | 用途 |
-| --- | --- |
-| 模糊、扩散 | 调整光的柔和程度及覆盖范围 |
-| 渐变时长 | 调整画面颜色切换的平滑程度；设为零关闭渐变 |
-| 强度 | 调整环境光透明度 |
-| 饱和度、亮度 | 调整整个环境光的颜色，不改变视频本身 |
-| 渲染质量 | 自动或固定采样分辨率 |
-| 帧率上限 | 限制环境光更新频率，最高 60 FPS |
-| 恢复默认 | 重置所有设置 |
+## 许可
 
-## 隐私与权限
-
-视频采样和渲染均在本地进行，设置仅存于浏览器本地。扩展没有遥测、外部数据上传或网络请求功能。使用 `storage` 权限及 Bilibili 站点内容脚本，详见 [隐私说明](PRIVACY.md)。
-
-## 许可与参考
-
-软件代码采用 [MIT License](LICENSE)。参考项目为 **[youtube-ambilight](https://github.com/WesselKroos/youtube-ambilight)**，作者 **Wessel Kroos**，核对版本 **2.38.17**。原始 MIT 声明完整保留在 [licenses/youtube-ambilight-MIT.txt](licenses/youtube-ambilight-MIT.txt)。
+MIT License，见 [LICENSE](LICENSE)。第三方参考与许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 与 [licenses/](licenses/)。

@@ -5,7 +5,10 @@
 <body>
 <header><h1>环境光</h1></header>
 <form id="settings" inert>
+<div class="switches">
 <label class="toggle"><span>启用环境光</span><input id="enabled" type="checkbox"></label>
+<label class="toggle"><span>亮色模式<small>仅把背景板改为白色</small></span><input id="lightMode" type="checkbox"></label>
+</div>
 <fieldset class="ambient-controls"><legend>环境光效果</legend>
 <div class="control"><label for="blur">模糊 <output id="blur-value" for="blur"></output></label><input id="blur" type="range" min="0" max="100" step="0.1"></div>
 <div class="control"><label for="spread">扩散 <output id="spread-value" for="spread"></output></label><input id="spread" type="range" min="0" max="4" step="0.001"></div>

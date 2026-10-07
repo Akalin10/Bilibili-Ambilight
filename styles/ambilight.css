@@ -123,6 +123,359 @@ body.bilibili-ambilight-page {
 }
 
 
+/* ==========================================================================
+   亮色模式：只把背景板底色由黑改白，其余 UI 一律沿用暗色模式的原样。
+   上半部分（视频页顶部/底部露出的底色）由这里的 --ambilight-backdrop 控制；
+   下半部分（B 站页面容器自己的底色）由下面 body.bilibili-ambilight-page
+   的 --bg1 控制。.ambilight-light 由设置里的 lightMode 同步到 <html>。
+   ========================================================================== */
+
+html.ambilight-light.bilibili-ambilight-host {
+  --ambilight-backdrop: #ffffff;
+  background: var(--ambilight-backdrop) !important;
+}
+
+html.ambilight-light body.bilibili-ambilight-page {
+  --bg1: #ffffff;
+}
+
+/* 亮色模式：页面主滚动条用「原生亮色」。
+   页面主滚动条没有自己的 ::-webkit-scrollbar 规则，颜色完全由 color-scheme 决定，
+   而插件在 html.bilibili-ambilight-host 上写死了 color-scheme: dark（第 108 行，给暗色模式用）。
+   这里只把 color-scheme 改回 light，不写任何 ::-webkit-scrollbar / scrollbar-color，
+   交给浏览器按原生亮色渲染 —— 也就是"原生的浅色滚动条"。
+   注意：播放器/合集列表里的滚动条是 B 站自定义的 .bscroll 组件（不是原生滚动条），
+   不受 color-scheme 影响，因此会保持它原来的样子（深色细条）。 */
+html.ambilight-light.bilibili-ambilight-host {
+  color-scheme: light;
+}
+
+/* B 站把 --bg1 用在页面容器、番剧页、列表页与评论区的底色上；
+   下面这些容器由插件强制透明或被自己写死了底色，需要一并放开，
+   否则背景板只会白一条、其余仍是深色面板。 */
+html.ambilight-light body.bilibili-ambilight-page :is(.main-container, #danmukuBox,
+  .plp-r > div, .plp-r > section, [class*="SectionSkeleton_panel"],
+  [class*="PaginatedEpList_root"], section:has([class*="EpisodeVirtualList_scroll"])),
+html.ambilight-light body.bilibili-ambilight-page.bilibili-ambilight-bangumi :is([class*="EpisodeVirtualList_gridItem"],
+  [class*="EpisodeVirtualList_listItem"]),
+html.ambilight-light body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container {
+  background: transparent !important;
+}
+
+/* 亮色模式下只去掉评论区容器那一圈边框。
+   B 站给评论容器画了 1px 边框，插件把底色变透明后在浅色底上会显成一个灰方框；
+   该边框画在 #commentapp / <bili-comments> 内部（组件影子根）任一层，
+   所以这里从评论区根往下所有层统一清掉边框与描边，其余属性（底色、文字、投影）
+   一律保持暗色模式原样。 */
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box),
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box) * {
+  border-color: transparent !important;
+  border-image: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 上面那条通配规则会把「评论之间的横向分割线」一起清掉，这里把它找回来。
+   现场实测（用户 DevTools，暗色模式选中那条线）：
+     DIV#div  高 15px   bottom = 0.666667px solid rgb(41, 44, 49)
+     rgb(41,44,49) = #292c31 = 插件深色模式的 --graph_bg_thick
+   也就是说这条线是通过「设计变量」画的，而变量在评论区里又被我早先的兜底规则
+   改写成了 transparent —— 所以怎么调都看不见。
+   结论：不要再依赖变量。下面直接按元素钉住两条最可能画线的路径：
+     ① #div              —— 现场实测的那条分割线
+     ② bili-comments / bili-comment-box 的影子根里，除容器外的直接子层
+   只染上下边框，避免容器层重新变回灰方框。 */
+html.ambilight-light body.bilibili-ambilight-page #commentapp #div,
+html.ambilight-light body.bilibili-ambilight-page #commentapp div#div,
+html.ambilight-light body.bilibili-ambilight-page #commentapp bili-comments #div,
+html.ambilight-light body.bilibili-ambilight-page #commentapp bili-comments div#div,
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container) :is(bili-comments, bili-comment-box) > :not(#body),
+html.ambilight-light body.bilibili-ambilight-page :is(bili-comments, bili-comment-box) > :not(#body) {
+  border-top-color: rgba(0, 0, 0, .12) !important;
+  border-bottom-color: rgba(0, 0, 0, .12) !important;
+}
+
+/* 兜底（也是最终生效的一招）：评论分割线是通过设计变量画的。
+   现场实测：暗色模式下那条线的颜色 = rgb(41,44,49) = #292c31 = 插件的 --graph_bg_thick；
+   而变量能继承进影子根（实测 #div 能读到），所以这里在评论区根节点把相关变量
+   统一改成可见的深灰，并加 !important 防止被其它规则（含我自己早先的兜底）覆盖。
+   注意：不再设成 transparent —— 那正是分割线一直不显示的直接原因。 */
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box) {
+  --graph_bg_thick: rgba(0, 0, 0, .12) !important;
+  --graph_bg_regular: rgba(0, 0, 0, .12) !important;
+  --line_regular: rgba(0, 0, 0, .12) !important;
+  --line-light: rgba(0, 0, 0, .12) !important;
+  --line_regular_light: rgba(0, 0, 0, .12) !important;
+}
+
+/* 评论输入框（「发来和UP唠会嗑呗」那一条）。
+   现场实测结构：输入区是 div#editor（588×49，自带深灰底 rgba(22,23,26,.28)），
+   外层依次是 <bili-comment-box>（Web Component）与若干无 class 的 div。
+   前几版失败的原因：先把这些层统一刷成 transparent，再想靠 :hover 补底色，
+   但真实页面里鼠标悬停命中的是**内层**元素，补的那条没生效 →
+   结果就是「悬停后整条框透明、只剩文字」。
+   现在改为不再刷透明：直接把底色定成浅色，并给悬停/聚焦加一档更实的浅灰，
+   这样任何状态下都不会出现「透明 + 只剩文字」。 */
+/* 现场实测（用户 Console 输出，亮色模式）：
+     bili-comment-box#-.-  bg=rgba(0,0,0,0)
+     div#body.-            bg=rgba(0,0,0,0)
+     div#editor.-          bg=rgba(22,23,26,0.28)      ← 深灰底，改动前一直没被命中
+   #editor 是无 class 的 div，**真正的输入元素是它内部的 div.brt-editor**
+   （contenteditable，B 站自己写 `style="height:32px"`）。
+   前几版失败的另一个原因：上面这条 `#editor *` 通配把 .brt-editor 也刷成了透明，
+   所以"评论条没有变化"。这里把 .brt-editor 明确列入定色清单。 */
+html.ambilight-light body.bilibili-ambilight-page bili-comment-box,
+html.ambilight-light body.bilibili-ambilight-page #editor,
+html.ambilight-light body.bilibili-ambilight-page .brt-editor,
+html.ambilight-light body.bilibili-ambilight-page #editor .brt-editor,
+html.ambilight-light body.bilibili-ambilight-page #commentapp .brt-editor,
+html.ambilight-light body.bilibili-ambilight-page #commentapp #editor,
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box) > div,
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box) > div > div,
+html.ambilight-light body.bilibili-ambilight-page :is(.reply-box, .reply-box .reply-box-wrap, .reply-box .reply-box-warp),
+html.ambilight-light body.bilibili-ambilight-page :is(.reply-box .reply-box-textarea, .reply-box textarea,
+  .reply-box .reply-box-tools, .reply-box .reply-box-send, .reply-box .reply-box-emoji,
+  .reply-box .reply-box-at, .reply-box .reply-box-upload, .reply-box .bili-rich-textarea,
+  .reply-box .bili-rich-textarea__inner) {
+  background: rgba(255, 255, 255, .72) !important;
+  border-color: rgba(0, 0, 0, .12) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* 悬停 / 聚焦：底色再实一档（.72 → .95），给"可以打字了"的明确反馈。
+   这里刻意用 #editor / #commentapp 这类带 id 的写法提升特异性：
+   上面那条静止规则里含 :is(… .comment-container …) 与 `> div` 这类结构，
+   基础特异性很高，只用 :is(:hover) 是压不过它的（实测聚焦后仍是 .72）。 */
+html.ambilight-light body.bilibili-ambilight-page #editor:is(:hover, :focus, :focus-within),
+html.ambilight-light body.bilibili-ambilight-page #commentapp #editor:is(:hover, :focus, :focus-within),
+html.ambilight-light body.bilibili-ambilight-page :is(.brt-editor, #editor .brt-editor, #commentapp .brt-editor):is(:hover, :focus, :focus-within),
+html.ambilight-light body.bilibili-ambilight-page #commentapp bili-comment-box:is(:hover, :focus-within),
+html.ambilight-light body.bilibili-ambilight-page bili-comment-box:is(:hover, :focus-within) .brt-editor,
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box) > div:is(:hover, :focus-within),
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box) > div > div:is(:hover, :focus-within),
+html.ambilight-light body.bilibili-ambilight-page :is(.reply-box, .reply-box .reply-box-wrap, .reply-box .reply-box-warp):is(:hover, :focus-within),
+html.ambilight-light body.bilibili-ambilight-page :is(.reply-box .reply-box-textarea, .reply-box textarea,
+  .reply-box .bili-rich-textarea, .reply-box .bili-rich-textarea__inner):is(:hover, :focus, :focus-within) {
+  background: rgba(255, 255, 255, .95) !important;
+  border-color: rgba(0, 0, 0, .22) !important;
+}
+
+/* 兜底：上面那些无 class 的元素把 B 站的设计变量直接当底色/边框色用
+   （--bg1 → 深灰底、--graph_bg_thick → 边框色）。在评论区根节点把这两个
+   变量在亮色模式下置空，即使元素结构变了也仍然透明。
+   --bg2/--bg3 保留，避免影响楼层卡片、按钮等其它填充。 */
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, bili-comments, bili-comment-box) {
+  --bg1: transparent;
+  --graph_bg_thick: transparent;
+}
+
+/* 亮色模式下改善评论区阅读体验：把评论区文字改成深色。
+   原因：插件的暗色主题把这棵子树的文字变量设成了浅色（#edf1f5 一类）并加了
+   深色描边，在白色背景板上会变成「浅字 + 黑描边」，读起来发虚。
+   这里在评论区根节点把文字变量整体翻转为深色，并兜住组件内部那些没法预知
+   类名的文字节点（真实页面上这些元素 class 多为空）。
+   刻意不用 !important：让 B 站的强调色（用户名品牌色、等级标签、UP 主标识、
+   置顶等更具体的选择器）仍然生效，只做「浅→深」的兜底。 */
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, #comment, .comment-container, .comment-container *, .reply-box, .reply-box *, bili-comments, bili-comments *, bili-comment-box, bili-comment-box *) {
+  color: #18191c;
+  --text1: #18191c;
+  --text2: #303133;
+  --text3: #61666d;
+  --text4: #9499a0;
+  --graph_weak: #61666d;
+  text-shadow: none;
+}
+/* 次要信息（时间、点赞数、回复按钮等）压一档灰度，保持层次 */
+html.ambilight-light body.bilibili-ambilight-page :is(#commentapp, bili-comments, .comment-container, bili-comment-box) :is(time, .time, .sub, .count, .like, .dislike, .reply, .floor, [class*="time"], [class*="count"], [class*="action"]) {
+  color: #61666d;
+}
+html.ambilight-light body.bilibili-ambilight-page :is(bili-comments, bili-comment-box) :is(svg, path) {
+  fill: #61666d;
+  color: #61666d;
+}
+html.ambilight-light body.bilibili-ambilight-page :is(bili-comments, bili-comment-box) :is(input, textarea)::placeholder {
+  color: #9499a0 !important;
+  opacity: 1;
+}
+
+
+/* ---------------------------------------------------------------------------
+   亮色模式下弹幕列表（历史弹幕）面板：文字**保持白色**，并去掉面板自带的浅色底。
+   说明：弹幕面板在两种模式下都按"环境光上的白字"处理（用户确认以白色为准），
+   深色模式的浅色文字由文件末尾的「暗色模式守卫」规则负责，两边一致。
+   --------------------------------------------------------------------------- */
+
+html.ambilight-light body.bilibili-ambilight-page :is(.danmaku-box, .danmaku-wrap) {
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  --text3: #edf1f5;
+  --graph_weak: #edf1f5;
+}
+html.ambilight-light body.bilibili-ambilight-page .danmaku-wrap :is(.bui-dropdown-name, .bui-dropdown-item,
+  .bui-collapse-arrow-text, .bpx-player-dm-load-status, .bpx-player-dm-btn-history, .bpx-player-dm-wrap,
+  .bpx-player-dm-wrap-child, .bpx-player-dm-container, .bpx-player-dm-management, .bpx-player-dm-function,
+  .bpx-player-wraplist, .bpx-player-collapse, .bui-collapse-header, .bui-collapse-body, .bui-area),
+html.ambilight-light body.bilibili-ambilight-page .danmaku-wrap :is(.bpx-player-wraplist, .bpx-player-dm,
+  .bpx-player-dm-wrap, .bpx-player-dm-wrap-child, .bpx-player-dm-container) :is(span, div, p, li, a,
+  time, td, th, label, b, strong, em, small) {
+  color: #edf1f5 !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .danmaku-wrap :is(.bui-collapse-header, .bui-collapse-body,
+  .bpx-player-wraplist, .bpx-player-collapse, .bpx-player-dm-wrap, .bpx-player-dm-wrap-child) {
+  background: transparent !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .85);
+}
+html.ambilight-light body.bilibili-ambilight-page .danmaku-wrap :is(.bui-collapse-arrow-text,
+  .bui-dropdown-icon, .bpx-player-dm-load-status, .bpx-player-dm-btn-history) svg {
+  fill: #edf1f5 !important;
+  color: #edf1f5 !important;
+}
+
+
+/* ==========================================================================
+   搜索面板（.search-panel.nav-search-panel，点搜索框后展开）
+   真实结构（按 www.bilibili.com 视频页实抓 CSS/DOM 核对）：
+     .nav-search-panel                定位壳
+       .search-panel                  面板本体：background: var(--bg1)、
+                                      border: 1px solid var(--line_regular)
+         .histories-wrap > .histories > .history-item > .history-text   （搜索历史）
+         .trendings-double > .trendings-col > .trending-item
+             > .trendings-rank + .trending-text                          （bilibili 热搜）
+   两边一致：面板底色改成半透明（让环境光透出）、去掉边框与阴影；
+   文字/小方块保持实色以保证可读性。
+   ========================================================================== */
+
+/* 深色模式：半透明深色面板（保留黑）+ 浅色文字 + 深灰小方块 */
+body.bilibili-ambilight-page .search-panel {
+  background: rgba(18, 19, 22, .62) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  --bg1: transparent;
+  --graph_bg_thin: rgba(255, 255, 255, .10);
+  --graph_bg_regular: rgba(255, 255, 255, .14);
+  --graph_bg_thick: rgba(255, 255, 255, .20);
+}
+body.bilibili-ambilight-page .search-panel :is(.histories-wrap, .histories, .trendings-double,
+  .trendings-col, .trending-item) {
+  background: transparent;
+}
+/* 文字统一走这一条：模式覆盖规则都会带 !important，
+   所以基础规则不加，靠后面同特异性的亮色规则反超。 */
+body.bilibili-ambilight-page .search-panel :is(.history-item, .trending-item, .trending-text,
+  .histories-title, .trendings-title, .panel-title) {
+  color: #edf1f5;
+}
+body.bilibili-ambilight-page .search-panel :is(h1, h2, h3, h4, strong, b) {
+  color: #f4f5f7;
+}
+body.bilibili-ambilight-page .search-panel .trendings-rank {
+  color: #dce3eb !important;
+}
+body.bilibili-ambilight-page .search-panel .trendings-rank.search-rank-top {
+  color: #f4f5f7 !important;
+}
+body.bilibili-ambilight-page .search-panel .trending-item:is(.active, :hover, :focus) {
+  background: rgba(255, 255, 255, .14) !important;
+}
+
+/* 亮色模式：半透明浅色面板（保留白）+ 黑字 + 白色小方块 */
+html.ambilight-light body.bilibili-ambilight-page .search-panel {
+  background: rgba(255, 255, 255, .62) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  --bg1: transparent;
+  --graph_bg_thin: #ffffff;
+  --graph_bg_regular: #ffffff;
+  --graph_bg_thick: #ffffff;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel :is(.histories-wrap, .histories,
+  .trendings-double, .trendings-col, .trending-item) {
+  background: transparent;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel :is(.history-item, .trending-item,
+  .trending-text, .histories-title, .trendings-title, .panel-title) {
+  color: #0f0f10 !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel :is(h1, h2, h3, h4, strong, b) {
+  color: #0f0f10 !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .history-item {
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .10);
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .trendings-rank {
+  color: #61666d !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .trendings-rank.search-rank-top {
+  color: #0f0f10 !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .trending-item:is(.active, :hover, :focus) {
+  background: rgba(0, 0, 0, .06) !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .history-item:is(:hover, :focus) {
+  color: var(--brand_blue, #008ac5) !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .history-item .close svg {
+  fill: #61666d;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, .28);
+}
+
+/* ---------------------------------------------------------------------------
+   亮色模式下把顶部搜索条改成「半透明白 + 深色文字」，提高可见度。
+   背景说明：未聚焦时的透明是上面暗色段规则做的（#nav-searchform:not(:focus-within)
+   → background: transparent，原本是给黑色背景板用的），亮色模式下会露出环境光，
+   文字又是浅色 → 糊成一片。这里按亮色模式重做：
+     · 未聚焦：半透明白 rgba(255,255,255,.62) + 细边框 + 深色文字/占位符
+     · 聚焦  ：底色加深到 .92 + 品牌蓝描边
+   只在 html.ambilight-light 作用域内，深色模式一行不动。
+   注意：选择器必须带上 .center-search-container —— 暗色段那条的
+   :not(:focus-within) 也计一个类，实际特异性是 (1,3,1)，
+   不与之对等（或更高）就压不过它，底色会一直保持透明。
+   --------------------------------------------------------------------------- */
+/* 关键：整条搜索框**只保留一层白底**（设在 form 上），
+   .nav-search-content / .nav-search-input / .nav-search-btn 一律透明。
+   否则三层各自的白色会互相叠加，出现"左中右三种色调"。
+   —— 之前这里有一条 `… :is(.nav-search-input, .nav-search-content){background:transparent}`
+   写在设色规则**之后**，把白底又刷回了透明，是导致颜色不一致的直接原因。 */
+html.ambilight-light body.bilibili-ambilight-page .center-search-container:is(#nav-searchform, .nav-search-content),
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(#nav-searchform, .nav-search-content),
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(#nav-searchform, .nav-search-content):focus-within {
+  background: rgba(255, 255, 255, .62) !important;
+  border: 1px solid rgba(0, 0, 0, .12) !important;
+  border-radius: 8px;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* 内层一律透明，避免与上面那层白叠加 */
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(.nav-search-content, .nav-search-input, .nav-search-btn, .nav-search-content *),
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(.nav-search-content, .nav-search-input, .nav-search-btn):is(:hover, :focus, :focus-within) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform :is(.nav-search-input, .nav-search-btn, .nav-search-content),
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform :is(.nav-search-input, .nav-search-btn)::placeholder {
+  color: #18191c !important;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-input::placeholder {
+  color: #61666d !important;
+  opacity: 1;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-btn svg,
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-btn path {
+  fill: #303133 !important;
+  color: #303133 !important;
+}
+
+
 body.bilibili-ambilight-page :is(#playerWrap, .player-wrap, #bilibili-player, #bilibili-player-placeholder, #bpx-player-container, .bpx-player-container, .bpx-docker-major, .bilibili-player) {
   box-shadow: none !important;
 }
@@ -173,6 +526,27 @@ body.bilibili-ambilight-page :is(.video-tag-container .show-more-btn,
 }
 body.bilibili-ambilight-page .video-pod .simple-base-item.active {
   background: rgba(22, 23, 26, .26) !important;
+}
+
+
+/* 弹幕列表（历史弹幕）面板。
+   真实结构（已按 www.bilibili.com 视频页实际 DOM 核对）：
+     .danmaku-box > .danmaku-wrap > .bpx-docker-minor
+       > .bpx-player-collapse.bui-collapse > .bui-area
+         > .bui-collapse-wrap > .bui-collapse-header   ← “弹幕列表 / 屏蔽设定 / 高级弹幕”
+         > .bui-collapse-body > .bpx-player-wraplist > .bpx-player-filter-wrap.bpx-player-dm
+             > .bpx-player-dm-wrap / .bpx-player-dm-wrap-child > .bpx-player-dm-container
+   这棵子树里的文字颜色来自 B 站自己的 --text* 变量，上层覆盖传不进来，
+   所以在暗色模式下会回退成浅色主题的深灰。这里把变量在面板根节点
+   重置为环境光配色（亮色模式下由上面的亮色规则再覆盖一次）。 */
+body.bilibili-ambilight-page :is(.danmaku-box, .danmaku-wrap) {
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  --text3: #edf1f5;
+  --graph_weak: #edf1f5;
+}
+body.bilibili-ambilight-page .danmaku-wrap :is(.bpx-player-dm-wrap, .bpx-player-dm-wrap-child) {
+  background: transparent !important;
 }
 
 
@@ -349,4 +723,29 @@ body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container :is(
 }
 body.bilibili-ambilight-page.bilibili-ambilight-list .action-list-container .multip-list-item-active {
   background: rgba(22, 23, 26, .24) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   文件末尾的「暗色模式守卫」规则。
+   背景：亮色段的规则写在暗色段之后，遇到**特异性相同**的声明时会反超暗色段，
+   即使当前并没有开亮色模式（html 上没有 .ambilight-light）。
+   弹幕列表文字就踩了这个坑：亮色段那条 color: #18191c 把深色模式的弹幕字
+   也压成了深色（原先靠变量继承的浅色失效）。
+   所以这里用 html:not(.ambilight-light) 显式限定"暗色模式"，并提高特异性，
+   把弹幕列表的文字重新钉回浅色。新增亮色规则时若遇到同类问题，也在这里补一条。
+   --------------------------------------------------------------------------- */
+html:not(.ambilight-light) body.bilibili-ambilight-page :is(.danmaku-box, .danmaku-wrap),
+html:not(.ambilight-light) body.bilibili-ambilight-page :is(.danmaku-box, .danmaku-wrap) :is(
+  .bui-dropdown-name, .bui-dropdown-item, .bui-collapse-arrow-text,
+  .bpx-player-dm-load-status, .bpx-player-dm-btn-history,
+  .bpx-player-dm-wrap, .bpx-player-dm-wrap-child, .bpx-player-dm-container,
+  .bpx-player-dm-management, .bpx-player-dm-function, .bpx-player-wraplist) {
+  color: #edf1f5 !important;
+  --text1: #f4f5f7;
+  --text2: #edf1f5;
+  --text3: #edf1f5;
+  --graph_weak: #edf1f5;
+}
+html:not(.ambilight-light) body.bilibili-ambilight-page :is(.danmaku-box, .danmaku-wrap) :is(span, div, p, li, a, time, td, th, label, b, strong, em, small) {
+  color: #edf1f5 !important;
 }

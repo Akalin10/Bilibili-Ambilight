@@ -7,6 +7,9 @@
   let queue=Promise.resolve();
   let draft={...settings.value};
   function render(value){
+    // 弹窗自身也跟随亮色模式：syncTheme 把 ambilight-light 挂到 <html>，
+    // 由 styles/popup.css 里的同名作用域切换成白色外观。
+    settings.syncTheme(value);
     for(const [key,n] of Object.entries(value)){
       const input=document.getElementById(key);
       if(typeof n==='boolean')input.checked=n;else input.value=n;

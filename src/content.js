@@ -5,6 +5,13 @@
   app.started = true;
   let instance=null, observer=null, timer=null, queued=null, stopped=false;
   let lastUrl=location.href;
+  // 亮色模式只影响背景板，<html> 上的类由 settings.syncTheme() 统一维护，
+  // 这里额外把类同步到 <body>，方便按页面范围书写覆盖规则。
+  function applyTheme(settings=app.settings.value){
+    const light=settings.lightMode===true;
+    if(document.body && document.body.classList.contains('ambilight-light')!==light)
+      document.body.classList.toggle('ambilight-light',light);
+  }
   function reconcile() {
     queued=null;
     if(stopped)return;
@@ -22,6 +29,7 @@
         catch(error){console.warn('[Bilibili Ambilight] 初始化失败。',error);}
       } else instance.updateGeometry();
     }
+    applyTheme(settings);
     document.body.classList.toggle('bilibili-ambilight-bangumi',!!instance && app.player.isBangumiPage());
     document.body.classList.toggle('bilibili-ambilight-list',!!instance && app.player.isListPage());
     app.syncBewlyCompatibility?.(!!instance);
@@ -35,6 +43,7 @@
       document.addEventListener('DOMContentLoaded',start,{once:true});return;
     }
     observer?.disconnect();clearInterval(timer);
+    app.settings.syncTheme();
     observer=new MutationObserver(records=>{
       if(records.some(record=>!record.target.closest?.('.bilibili-ambilight') &&
           app.player.isRelevantMutation(record,instance?.video)))queue();
@@ -46,6 +55,7 @@
   }
   app.settings.subscribe(settings=>{
     if(stopped)return;
+    applyTheme(settings);
     instance?.applySettings(settings);queue();
   });
   document.addEventListener('fullscreenchange',queue);
