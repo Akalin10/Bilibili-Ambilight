@@ -402,3 +402,150 @@ body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row :is(.dm-info-
 body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row .dm-info-report-btn {
   order: 1;
 }
+
+body.bilibili-ambilight-page .search-panel {
+  background: rgba(18, 19, 22, .62) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  --bg1: transparent;
+  --graph_bg_thin: rgba(255, 255, 255, .10);
+  --graph_bg_regular: rgba(255, 255, 255, .14);
+  --graph_bg_thick: rgba(255, 255, 255, .20);
+}
+body.bilibili-ambilight-page .search-panel :is(.histories-wrap, .histories, .trendings-double,
+  .trendings-col, .trending-item) {
+  background: transparent;
+}
+
+body.bilibili-ambilight-page .search-panel :is(.history-item, .trending-item, .trending-text,
+  .histories-title, .trendings-title, .panel-title) {
+  color: #edf1f5;
+}
+body.bilibili-ambilight-page .search-panel :is(h1, h2, h3, h4, strong, b) {
+  color: #f4f5f7;
+}
+body.bilibili-ambilight-page .search-panel .trendings-rank {
+  color: #dce3eb !important;
+}
+body.bilibili-ambilight-page .search-panel .trendings-rank.search-rank-top {
+  color: #f4f5f7 !important;
+}
+body.bilibili-ambilight-page .search-panel .trending-item:is(.active, :hover, :focus) {
+  background: rgba(255, 255, 255, .14) !important;
+}
+
+
+html.ambilight-light body.bilibili-ambilight-page .search-panel {
+  background: rgba(255, 255, 255, .62) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  --bg1: transparent;
+  --graph_bg_thin: #ffffff;
+  --graph_bg_regular: #ffffff;
+  --graph_bg_thick: #ffffff;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel :is(.histories-wrap, .histories,
+  .trendings-double, .trendings-col, .trending-item) {
+  background: transparent;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel :is(.history-item, .trending-item,
+  .trending-text, .histories-title, .trendings-title, .panel-title) {
+  color: #0f0f10 !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel :is(h1, h2, h3, h4, strong, b) {
+  color: #0f0f10 !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .history-item {
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .10);
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .trendings-rank {
+  color: #61666d !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .trendings-rank.search-rank-top {
+  color: #0f0f10 !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .trending-item:is(.active, :hover, :focus) {
+  background: rgba(0, 0, 0, .06) !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .history-item:is(:hover, :focus) {
+  color: var(--brand_blue, #008ac5) !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel .history-item .close svg {
+  fill: #61666d;
+}
+html.ambilight-light body.bilibili-ambilight-page .search-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, .28);
+}
+
+
+
+html.ambilight-light body.bilibili-ambilight-page .center-search-container:is(#nav-searchform, .nav-search-content),
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(#nav-searchform, .nav-search-content),
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(#nav-searchform, .nav-search-content):focus-within {
+  background: rgba(255, 255, 255, .62) !important;
+  border: 1px solid rgba(0, 0, 0, .12) !important;
+  border-radius: 8px;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(.nav-search-content, .nav-search-input, .nav-search-btn, .nav-search-content *),
+html.ambilight-light body.bilibili-ambilight-page .center-search-container :is(.nav-search-content, .nav-search-input, .nav-search-btn):is(:hover, :focus, :focus-within) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform :is(.nav-search-input, .nav-search-btn, .nav-search-content),
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform :is(.nav-search-input, .nav-search-btn)::placeholder {
+  color: #18191c !important;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-input::placeholder {
+  color: #61666d !important;
+  opacity: 1;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-btn svg,
+html.ambilight-light body.bilibili-ambilight-page #nav-searchform .nav-search-btn path {
+  fill: #303133 !important;
+  color: #303133 !important;
+}
+
+
+
+
+html.ambilight-light.bilibili-ambilight-host,
+html.ambilight-light.bewly-design.bilibili-ambilight-host {
+  background: #ffffff !important;
+  color-scheme: light;
+}
+html.ambilight-light body.bilibili-ambilight-page { --bg1: #ffffff; }
+html.ambilight-light body.bilibili-ambilight-page :is(#comment, #commentapp, .comment-container, .reply-box, bili-comments, bili-comment-box) {
+  --bg1: transparent;
+  --bg2: rgba(255,255,255,.72);
+  --bg3: rgba(255,255,255,.82);
+  --bg1_float: #ffffff;
+  --bg2_float: #f4f5f7;
+  --bg3_float: #e8eaed;
+  --text1: #18191c;
+  --text2: #303133;
+  --text3: #61666d;
+  --text4: #9499a0;
+  --graph_weak: #61666d;
+  --graph_bg_thick: rgba(0,0,0,.12);
+  --line_regular: rgba(0,0,0,.12);
+  color: #18191c;
+  text-shadow: none;
+}
+html.ambilight-light body.bilibili-ambilight-page :is(.reply-box .reply-box-textarea, .reply-box textarea,
+  .reply-box .reply-box-warp, .reply-box .reply-box-tools, .reply-box .reply-box-send,
+  .reply-box .reply-box-emoji, .reply-box .reply-box-at, .reply-box .reply-box-upload) {
+  background: rgba(255,255,255,.72) !important;
+  color: #18191c !important;
+  border-color: rgba(0,0,0,.12) !important;
+}
+html.ambilight-light body.bilibili-ambilight-page .reply-box textarea::placeholder { color: #61666d !important; }

@@ -4,6 +4,7 @@
   let style = null;
   let voteObserver = null;
   let voteTimer = null;
+  let voteLight = false;
   const voteStyles = new Set();
   const watchedRoots = new Set();
   const pendingHosts = new Set();
@@ -32,10 +33,15 @@
         if (!watchedRoots.has(root)) {
           watchedRoots.add(root);
           voteObserver.observe(root, {childList: true, subtree: true});
-          if (node.localName === 'bili-comments-vote-card' || ['bili-comment-renderer', 'bili-comment-reply-renderer'].includes(node.localName)) {
+          if (node.localName === 'bili-comments-vote-card' || ['bili-comment-renderer', 'bili-comment-reply-renderer', 'bili-comment-box'].includes(node.localName)) {
             const override = document.createElement('style');
             override.dataset.bilibiliAmbilightCompat = 'vote';
-            override.textContent = node.localName === 'bili-comments-vote-card' ? voteCss : badgeCss;
+            override.textContent = node.localName === 'bili-comments-vote-card' ?
+              (voteLight ? voteCss.replaceAll('#f4f5f7','#18191c').replaceAll('#dce3eb','#303133') : voteCss) :
+              (node.localName === 'bili-comment-box' ? (voteLight ? `
+                #editor, .brt-editor { background: rgba(255,255,255,.72) !important; color: #18191c !important; }
+                #editor:is(:hover,:focus-within) { background: rgba(255,255,255,.95) !important; }
+              ` : '') : (voteLight ? '#tags .tag { text-shadow: none !important; }' : badgeCss));
             voteStyles.add(override);
             root.append(override);
           }
@@ -48,6 +54,9 @@
     for (const child of node.children || []) visitVoteTree(child);
   }
   app.syncVoteCompatibility = active => {
+    const light=app.settings.value.lightMode===true;
+    if(active && voteObserver && voteLight!==light)app.syncVoteCompatibility(false);
+    voteLight=light;
     if (!active) {
       voteObserver?.disconnect();
       voteObserver = null;
@@ -83,57 +92,82 @@
       }
     }, 1000);
   };
-  // BewlyCat mounts its custom navigation in an open shadow root.
-  // Keep overrides local to that root and only while the light is active.
+  function palette(light) {
+    return light ? {
+      text1: '#18191c', text2: '#303133', text3: '#61666d',
+      content: 'rgba(255,255,255,.72)', contentHover: 'rgba(255,255,255,.92)',
+      border: 'rgba(0,0,0,.12)', textShadow: 'none',
+      popoverBg: '#ffffff', popoverText1: '#18191c', popoverText2: '#303133',
+      popoverText3: '#61666d', popoverText4: '#9499a0', popoverLine: 'rgba(0,0,0,.1)',
+      surface: '#ffffff', surfaceHover: '#eef0f3', fill1: 'rgba(0,0,0,.03)',
+      fill2: 'rgba(0,0,0,.06)', fill3: 'rgba(0,0,0,.09)',
+      fog: 'linear-gradient(to bottom, rgba(255,255,255,.75), transparent)',
+      searchNormal: 'rgba(255,255,255,.85)', searchHover: '#ffffff', searchFocus: '#ffffff',
+      colorScheme: 'light',
+    } : {
+      text1: '#f4f5f7', text2: '#edf1f5', text3: '#dce3eb',
+      content: 'rgba(22,23,26,.35)', contentHover: 'rgba(22,23,26,.65)',
+      border: 'rgba(255,255,255,.18)', textShadow: '0 1px 3px rgba(0,0,0,.8)',
+      popoverBg: '#202226', popoverText1: '#f4f5f7', popoverText2: '#dce3eb',
+      popoverText3: '#b9c3d0', popoverText4: '#9ba8ba', popoverLine: 'rgba(255,255,255,.18)',
+      surface: '#292c31', surfaceHover: '#343942', fill1: 'rgba(255,255,255,.06)',
+      fill2: 'rgba(255,255,255,.12)', fill3: 'rgba(255,255,255,.18)',
+      fog: 'linear-gradient(to bottom, rgba(11,11,11,.55), transparent)',
+      searchNormal: 'rgba(22,23,26,.75)', searchHover: '#292c31', searchFocus: '#202226',
+      colorScheme: 'dark',
+    };
+  }
   app.syncBewlyCompatibility = active => {
     const root = document.getElementById('bewly')?.shadowRoot;
-    if (!active || !root || style?.getRootNode() !== root) {
+    const light=app.settings.value.lightMode===true;
+    if (!active || !root || style?.getRootNode() !== root || (style && style.dataset.lightMode !== String(light))) {
       style?.remove();
       style = null;
     }
     if (!active || !root || style) return;
+    const p = palette(app.settings.value.lightMode === true);
     style = document.createElement('style');
     style.dataset.bilibiliAmbilightCompat = 'bewly';
+    style.dataset.lightMode = String(light);
     style.textContent = `
       .top-bar-header {
-        --bew-text-1: #f4f5f7;
-        --bew-text-2: #edf1f5;
-        --bew-text-3: #dce3eb;
-        --bew-content: rgba(22,23,26,.35);
-        --bew-content-hover: rgba(22,23,26,.65);
-        --bew-border-color: rgba(255,255,255,.18);
-        color: #edf1f5;
+        --bew-text-1: ${p.text1};
+        --bew-text-2: ${p.text2};
+        --bew-text-3: ${p.text3};
+        --bew-content: ${p.content};
+        --bew-content-hover: ${p.contentHover};
+        --bew-border-color: ${p.border};
+        color: ${p.text2};
+        text-shadow: ${p.textShadow};
       }
-      /* Popovers may be teleported outside the header. Pair every text
-         override with an opaque surface instead of inheriting white text
-         onto BewlyCat's light-theme panels. */
+
       .bew-popover, .bew-popover-surface {
-        --bew-text-1: #f4f5f7;
-        --bew-text-2: #dce3eb;
-        --bew-text-3: #b9c3d0;
-        --bew-text-4: #9ba8ba;
-        --bew-bg: #202226;
-        --bew-elevated: #202226;
-        --bew-elevated-solid: #202226;
-        --bew-elevated-hover: #343942;
-        --bew-elevated-solid-hover: #343942;
-        --bew-content: #292c31;
-        --bew-content-hover: #343942;
-        --bew-content-solid: #292c31;
-        --bew-content-solid-hover: #343942;
-        --bew-fill-1: rgba(255,255,255,.06);
-        --bew-fill-2: rgba(255,255,255,.12);
-        --bew-fill-3: rgba(255,255,255,.18);
-        --bew-border-color: rgba(255,255,255,.18);
-        --bew-popover-border-color: rgba(255,255,255,.18);
-        --bew-theme-color-auto: #f4f5f7;
-        color: #f4f5f7 !important;
-        background: #202226 !important;
+        --bew-text-1: ${p.popoverText1};
+        --bew-text-2: ${p.popoverText2};
+        --bew-text-3: ${p.popoverText3};
+        --bew-text-4: ${p.popoverText4};
+        --bew-bg: ${p.popoverBg};
+        --bew-elevated: ${p.popoverBg};
+        --bew-elevated-solid: ${p.popoverBg};
+        --bew-elevated-hover: ${p.surfaceHover};
+        --bew-elevated-solid-hover: ${p.surfaceHover};
+        --bew-content: ${p.surface};
+        --bew-content-hover: ${p.surfaceHover};
+        --bew-content-solid: ${p.surface};
+        --bew-content-solid-hover: ${p.surfaceHover};
+        --bew-fill-1: ${p.fill1};
+        --bew-fill-2: ${p.fill2};
+        --bew-fill-3: ${p.fill3};
+        --bew-border-color: ${p.border};
+        --bew-popover-border-color: ${p.border};
+        --bew-theme-color-auto: ${p.popoverText1};
+        color: ${p.popoverText1} !important;
+        background: ${p.popoverBg} !important;
         text-shadow: none;
-        color-scheme: dark;
+        color-scheme: ${p.colorScheme};
       }
       .top-bar-header__fog {
-        background: linear-gradient(to bottom, rgba(11,11,11,.55), transparent) !important;
+        background: ${p.fog} !important;
       }
       .top-bar-header__glass-overlay,
       .top-bar-header__legacy-mask {
@@ -145,16 +179,16 @@
         --b-search-bar-glass: none;
         --bew-shadow-2: 0 0 transparent;
         --bew-shadow-edge-glow-1: 0 0 transparent;
-        --b-search-bar-normal-color: rgba(22,23,26,.75) !important;
-        --b-search-bar-hover-color: #292c31 !important;
-        --b-search-bar-focus-color: #202226 !important;
-        --b-search-bar-normal-text-color: #edf1f5 !important;
-        --b-search-bar-hover-text-color: #edf1f5 !important;
-        --b-search-bar-focus-text-color: #edf1f5 !important;
-        --b-search-bar-normal-icon-color: #edf1f5 !important;
-        --b-search-bar-normal-placeholder-color: #dce3eb !important;
-        --b-search-bar-hover-placeholder-color: #dce3eb !important;
-        --b-search-bar-focus-placeholder-color: #dce3eb !important;
+        --b-search-bar-normal-color: ${p.searchNormal} !important;
+        --b-search-bar-hover-color: ${p.searchHover} !important;
+        --b-search-bar-focus-color: ${p.searchFocus} !important;
+        --b-search-bar-normal-text-color: ${p.text2} !important;
+        --b-search-bar-hover-text-color: ${p.text2} !important;
+        --b-search-bar-focus-text-color: ${p.text2} !important;
+        --b-search-bar-normal-icon-color: ${p.text2} !important;
+        --b-search-bar-normal-placeholder-color: ${p.text3} !important;
+        --b-search-bar-hover-placeholder-color: ${p.text3} !important;
+        --b-search-bar-focus-placeholder-color: ${p.text3} !important;
       }
     `;
     root.append(style);

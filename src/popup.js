@@ -7,6 +7,7 @@
   let queue=Promise.resolve();
   let draft={...settings.value};
   function render(value){
+    document.documentElement.classList.toggle('ambilight-light',value.lightMode===true);
     for(const [key,n] of Object.entries(value)){
       const input=document.getElementById(key);
       if(typeof n==='boolean')input.checked=n;else input.value=n;
