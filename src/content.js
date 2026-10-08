@@ -9,6 +9,9 @@
   const themeLinks=new Map();
   const darkTheme='https://s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/dark.css';
   function syncTheme(active) {
+    const light=active && app.settings.value.lightMode===true;
+    document.documentElement?.classList.toggle('ambilight-light',light);
+    document.body?.classList.toggle('ambilight-light',light);
     if(!active) {
       themeObserver?.disconnect();themeObserver=null;
       for(const [link,{href,target}] of themeLinks) {

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const app = globalThis.BilibiliAmbilight = globalThis.BilibiliAmbilight || {};
-  const defaults = Object.freeze({ enabled:true, strength:0.55, blur:42, spread:1.2,
+  const defaults = Object.freeze({ enabled:true, lightMode:false, strength:0.55, blur:42, spread:1.2,
     saturation:1.2, brightness:1.08, fadeMs:90, quality:'auto', fpsLimit:60 });
   const limits = { strength:[0,1], blur:[0,100], spread:[0,4], saturation:[0,2],
     brightness:[0.3,2], fadeMs:[0,400], fpsLimit:[10,60] };
@@ -11,6 +11,7 @@
     input=input && typeof input==='object' ? input : {};
     const result={...defaults};
     result.enabled=typeof input.enabled==='boolean' ? input.enabled : defaults.enabled;
+    result.lightMode=typeof input.lightMode==='boolean' ? input.lightMode : defaults.lightMode;
     result.quality=['auto','low','medium','high'].includes(input.quality) ? input.quality : defaults.quality;
     for(const [key,[min,max]] of Object.entries(limits)) {
       const n=input[key];
