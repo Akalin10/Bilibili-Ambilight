@@ -18,24 +18,24 @@
   height: 100%;
   transform: scale(var(--ambilight-spread-x, 1.2), var(--ambilight-spread-y, 1.26));
   filter: none;
-  
+
   will-change: transform;
   pointer-events: none !important;
 }
 
 
 .bilibili-ambilight[data-mode="page"] {
-  
+
   --ambilight-layer-opacity: 1;
   position: absolute;
   overflow: hidden;
   contain: strict;
-  
+
   mask-image: none;
 }
 .bilibili-ambilight[data-mode="page"] .bilibili-ambilight-canvas {
   filter: none;
-  
+
   transform: none;
 }
 .bilibili-ambilight[data-in-view="false"] { opacity: 0; }
@@ -53,7 +53,7 @@ body.bilibili-ambilight-page :is(.bili-header, .mini-header) {
 }
 body.bilibili-ambilight-page :is(.bili-header__bar, .mini-header__content) {
   background: rgba(22,23,26,.12) !important;
-  
+
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   text-shadow: 0 1px 3px rgba(0,0,0,.8);
