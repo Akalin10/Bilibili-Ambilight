@@ -24,7 +24,7 @@
 
   const autoDefaults = Object.freeze({ auto:false, mode:'manual',
     location:null, lightFromMinutes:420, lightToMinutes:1140 });
-  const locationSourceValues = ['geo','ip','manual'];
+  const locationSourceValues = ['geo','ip'];
   function finiteNumber(input) {
     if(typeof input==='number')return Number.isFinite(input)?input:null;
     if(typeof input!=='string' || !input.trim())return null;
@@ -43,12 +43,13 @@
   }
   function normalizeLocation(input) {
     const raw=input && typeof input==='object' ? input : {};
+    if(!locationSourceValues.includes(raw.source))return null;
     const latitude=coordinate(raw.latitude,90), longitude=coordinate(raw.longitude,180);
     if(latitude===null || longitude===null)return null;
     const at=finiteNumber(raw.at);
     return {
       latitude, longitude,
-      source:locationSourceValues.includes(raw.source)?raw.source:'manual',
+      source:raw.source,
       city:typeof raw.city==='string'&&raw.city?raw.city:null,
       at:at===null?null:Math.round(at),
     };
@@ -56,8 +57,6 @@
   function normalizePreferences(input={}) {
     const raw=input && typeof input==='object' ? input : {};
     let location=normalizeLocation(raw.location);
-    if(!location)location=normalizeLocation({latitude:raw.latitude, longitude:raw.longitude,
-      source:'manual', at:raw.at});
     return {
       auto:raw.auto===true,
       mode:modeValues.includes(raw.mode)?raw.mode:autoDefaults.mode,

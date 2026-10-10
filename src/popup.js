@@ -24,10 +24,7 @@
   const locateButton=required('#locate');
   const locationStatus=required('#location-status');
   const ipButton=required('#locate-ip');
-  const manualLocation=required('#manual-location');
   const autoStatus=required('#auto-status');
-  const coordsInput=required('#coords');
-  const coordsHint=required('#coords-hint');
   const autoDetails=required('#auto-details');
   const preferenceKeys={'auto':'auto'};
   let queue=Promise.resolve();
@@ -79,14 +76,7 @@
     }else render(value,'manual');
     applyState();
   }
-  function locationAge(stored){
-    if(!Number.isFinite(stored?.at))return '';
-    const days=Math.floor((Date.now()-stored.at)/86400000);
-    if(days<=0)return '（今天获取）';
-    return days>=30?`（${days} 天前获取）`:`（${days} 天前获取）`;
-  }
   function showLocation(location){
-    coordsHint.textContent='';
     if(!location){
       locationStatus.textContent='使用系统时区估算';
       return;
@@ -97,18 +87,15 @@
       locationStatus.textContent=`尚未获取位置，${zone}${accuracy}（约 ${locations.formatCoordinates(location.latitude,location.longitude)}）。`;
       return;
     }
-    coordsInput.value=locations.formatCoordinates(location.latitude,location.longitude);
     if(location.source==='geo'){
-      locationStatus.textContent=`已使用浏览器定位${locationAge(location)}。`;
+      locationStatus.textContent='已使用浏览器定位';
       return;
     }
     if(location.source==='ip'){
-      const city=location.city?`（${location.city}附近）`:'';
-      locationStatus.textContent=`已使用网络定位${city}${locationAge(location)}，精度到城市级。`;
+      locationStatus.textContent='已使用网络定位';
       return;
     }
-    coordsHint.textContent='按此坐标计算。';
-    locationStatus.textContent='已使用手动填写的坐标。';
+    locationStatus.textContent='使用系统时区估算';
   }
   function requestGeolocation(timeoutMs=12000){
     return new Promise(resolve=>{
@@ -143,7 +130,7 @@
         renderPreferences();
         return;
       }
-      if(!useIP){locationStatus.textContent='浏览器定位不可用';manualLocation.open=true;return;}
+      if(!useIP){locationStatus.textContent='浏览器定位不可用';return;}
       locationStatus.textContent='正在进行 IP 定位…';
       const ip=await app.ipLocation.lookup();
       if(ip){
@@ -152,11 +139,11 @@
         renderPreferences();
         return;
       }
-      locationStatus.textContent='定位失败，可手动填写坐标';
-      manualLocation.open=true;
+      locationStatus.textContent='定位失败，继续使用系统时区估算';
+      
     } catch(error) {
-      locationStatus.textContent='定位失败，可手动填写坐标';
-      manualLocation.open=true;
+      locationStatus.textContent='定位失败，继续使用系统时区估算';
+      
       console.info('[Bilibili Ambilight] 获取位置失败。',error);
       if(!previous)console.debug(error);
     } finally {
@@ -247,19 +234,6 @@
   });
   locateButton.addEventListener('click',()=>{locating=true;applyState();locate().finally(()=>{locating=false;applyState();});});
   ipButton.addEventListener('click',()=>{locating=true;applyState();locate(true).finally(()=>{locating=false;applyState();});});
-  coordsInput.addEventListener('input',()=>{
-    const point=locations.parseCoordinates(coordsInput.value);
-    coordsHint.textContent=point?'坐标有效':'格式示例：31.23, 121.47（纬度, 经度）';
-  });
-  coordsInput.addEventListener('change',()=>{
-    const point=locations.parseCoordinates(coordsInput.value);
-    if(!point){
-      coordsHint.textContent='格式示例：31.23, 121.47（纬度, 经度）';
-      return;
-    }
-    coordsHint.textContent='按此坐标计算。';
-    savePreferences({location:{...point, source:'manual', at:Date.now()}});
-  });
   const darkToggle=required('#darkMode');
   darkToggle.addEventListener('click',()=>{
     if(!themeSchedule.isAutoActive())return;

@@ -249,23 +249,10 @@
     return {latitude: 35, longitude, match: 'offset'};
   }
 
-  function parseCoordinates(text) {
-    if (typeof text !== 'string') return null;
-    const cleaned = text.trim().replace(/[（(].*?[)）]/g, ' ').replace(/[，、；;]/g, ',');
-    if (!cleaned) return null;
-    const numbers = cleaned.match(/-?\d+(?:\.\d+)?/g);
-    if (!numbers || numbers.length < 2) return null;
-    const latitude = Number(numbers[0]);
-    const longitude = Number(numbers[1]);
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
-    if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return null;
-    return {latitude: Math.round(latitude * 10000) / 10000, longitude: Math.round(longitude * 10000) / 10000};
-  }
-
   function formatCoordinates(latitude, longitude) {
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return '';
     return `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
   }
 
-  app.locations = {zoneCoordinates, parseCoordinates, formatCoordinates, systemZone};
+  app.locations = {zoneCoordinates, formatCoordinates, systemZone};
 })();

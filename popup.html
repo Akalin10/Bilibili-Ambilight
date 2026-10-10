@@ -5,8 +5,10 @@
 <body>
 <header><h1>环境光</h1></header>
 <form id="settings" inert>
+<details id="basic-details"><summary>基础设置</summary>
 <label class="toggle"><span>启用环境光</span><input id="enabled" type="checkbox"></label>
 <label class="toggle"><span>深色模式</span><input id="darkMode" type="checkbox"></label>
+</details>
 <details id="auto-details"><summary>深浅色自动切换</summary>
 
 <div id="preferences" inert>
@@ -16,13 +18,11 @@
 <label class="radio"><input type="radio" name="mode" value="sun">日出日落模式</label>
 <label class="radio"><input type="radio" name="mode" value="time">自定义时间</label>
 <div id="sun-fields">
+<div class="location-actions">
 <button id="locate" type="button">浏览器定位</button>
 <button id="locate-ip" type="button">IP 定位</button>
+</div>
 <p class="hint" id="location-status" role="status" aria-live="polite"></p>
-<details id="manual-location"><summary>手动填写坐标</summary>
-<label for="coords">纬度, 经度</label><input id="coords" type="text" inputmode="decimal" placeholder="例：31.23, 121.47" autocomplete="off">
-<p class="hint" id="coords-hint"></p>
-</details>
 </div>
 <div id="time-fields" hidden>
 <div class="field"><label for="light-from">浅色开始</label><input id="light-from" type="time"></div>
@@ -32,11 +32,11 @@
 </div>
 </div>
 </details>
-<fieldset class="ambient-controls"><legend>环境光效果</legend>
+<details id="ambient-details"><summary>环境光效果</summary><fieldset><legend class="visually-hidden">环境光效果</legend>
 <div class="control"><label for="blur">模糊 <output id="blur-value" for="blur"></output></label><input id="blur" type="range" min="0" max="100" step="0.1"></div>
 <div class="control"><label for="spread">扩散 <output id="spread-value" for="spread"></output></label><input id="spread" type="range" min="0" max="4" step="0.001"></div>
 <div class="control"><label for="fadeMs">渐变时长 <output id="fadeMs-value" for="fadeMs"></output></label><input id="fadeMs" type="range" min="0" max="400" step="10"></div>
-</fieldset>
+</fieldset></details>
 <details><summary>画面调整</summary><fieldset><legend class="visually-hidden">画面调整</legend>
 <label for="strength">强度 <output id="strength-value"></output></label><input id="strength" type="range" min="0" max="1" step="0.05">
 <label for="saturation">饱和度 <output id="saturation-value"></output></label><input id="saturation" type="range" min="0" max="2" step="0.05">
