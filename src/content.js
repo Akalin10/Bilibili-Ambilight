@@ -8,10 +8,15 @@
   let themeObserver=null;
   const themeLinks=new Map();
   const darkTheme='https://s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/dark.css';
+  function isDark(active) {
+    if(!active)return false;
+    const auto=app.themeSchedule?.getDark?.();
+    return auto===null || auto===undefined ? app.settings.value.darkMode===true : auto;
+  }
   function syncTheme(active) {
-    const light=active && app.settings.value.lightMode===true;
-    document.documentElement?.classList.toggle('ambilight-light',light);
-    document.body?.classList.toggle('ambilight-light',light);
+    const dark=isDark(active);
+    document.documentElement?.classList.toggle('ambilight-light',active && !dark);
+    document.body?.classList.toggle('ambilight-light',active && !dark);
     if(!active) {
       themeObserver?.disconnect();themeObserver=null;
       for(const [link,{href,target}] of themeLinks) {
@@ -26,7 +31,10 @@
         const href=link.getAttribute('href');
         const native=/\/bili-theme\/(?:light|dark)(_u)?\.css(?:[?#]|$)/.exec(link.href);
         if(link.id!=='__css-map__' && !native)continue;
-        const target=native?link.href.replace(/\/(?:light|dark)(_u)?\.css/, '/dark$1.css'):darkTheme;
+        let target=null;
+        if(native)target=link.href.replace(/\/(?:light|dark)(_u)?\.css/, dark?'/dark$1.css':'/light$1.css');
+        else if(dark)target=darkTheme;
+        if(target===null)continue;
         const saved=themeLinks.get(link);
         if(!saved || href!==saved.target)themeLinks.set(link,{href,target});
         if(link.href!==target)link.setAttribute('href',target);
@@ -82,6 +90,7 @@
     if(stopped)return;
     instance?.applySettings(settings);queue();
   });
+  document.addEventListener('ambilight-theme-change',()=>{if(!stopped)queue();});
   document.addEventListener('fullscreenchange',queue);
   window.addEventListener('popstate',queue);
   window.addEventListener('pagehide',()=>{
@@ -94,5 +103,6 @@
     document.body?.classList.remove('bilibili-ambilight-list');
   });
   window.addEventListener('pageshow',event=>{if(event.persisted)start();});
-  app.settings.ready.then(()=>{if(!stopped)start();});
+  Promise.all([app.settings.ready,app.preferences.ready]).then(()=>{if(!stopped)start();});
+  app.themeSchedule?.restore?.().then(restored=>{if(restored && !stopped)queue();});
 })();

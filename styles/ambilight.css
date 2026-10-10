@@ -66,8 +66,7 @@ body.bilibili-ambilight-page .center-search-container:not(:focus-within) :is(#na
   box-shadow: none !important;
 }
 
-/* Outrank BewlyCat's html.dark.bewly-design and .dark.bewly-design body.
-   The activation classes are removed by AmbientLight when it is disabled. */
+
 html.bewly-design.bilibili-ambilight-host {
   background: #0b0b0b !important;
 }
@@ -383,10 +382,22 @@ body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row {
   box-sizing: border-box;
   padding-right: 8px;
 }
+
+
+body.bilibili-ambilight-page:not(.ambilight-light) :is(.bpx-player-dm-container, .bpx-player-dm-wrap, .bpx-player-dm-management,
+  .bpx-player-dm-list, .bpx-player-dm-history, .bpx-player-dm-seg-wrap) {
+  color: #f4f5f7;
+}
+
+body.bilibili-ambilight-page:not(.ambilight-light) :is(.bpx-player-dm-container, .bpx-player-dm-wrap, .bpx-player-dm-management,
+  .bpx-player-dm-list, .bpx-player-dm-history, .bpx-player-dm-seg-wrap) * {
+  color: #f4f5f7 !important;
+}
 body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row .dm-info-dm {
   flex: 1 1 0 !important;
   min-width: 0;
 }
+
 body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row :is(.dm-info-block-btn, .dm-info-protect-btn, .dm-info-recall-btn, .dm-info-report-btn) {
   position: static !important;
   flex: 0 0 auto;

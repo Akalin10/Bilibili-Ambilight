@@ -1,6 +1,10 @@
 (() => {
   'use strict';
   const app = globalThis.BilibiliAmbilight;
+  const isDark = () => {
+    const auto = app.themeSchedule?.getDark?.();
+    return auto === null || auto === undefined ? app.settings.value.darkMode === true : auto;
+  };
   let style = null;
   let voteObserver = null;
   let voteTimer = null;
@@ -54,7 +58,7 @@
     for (const child of node.children || []) visitVoteTree(child);
   }
   app.syncVoteCompatibility = active => {
-    const light=app.settings.value.lightMode===true;
+    const light=!isDark();
     if(active && voteObserver && voteLight!==light)app.syncVoteCompatibility(false);
     voteLight=light;
     if (!active) {
@@ -75,7 +79,6 @@
     });
     voteObserver.observe(document.documentElement, {childList: true, subtree: true});
     visitVoteTree(document.documentElement);
-    // Shadow attachment itself does not produce a childList mutation.
     voteTimer = setInterval(() => {
       for (const host of pendingHosts) {
         if (!host.isConnected) pendingHosts.delete(host);
@@ -119,13 +122,13 @@
   }
   app.syncBewlyCompatibility = active => {
     const root = document.getElementById('bewly')?.shadowRoot;
-    const light=app.settings.value.lightMode===true;
+    const light=!isDark();
     if (!active || !root || style?.getRootNode() !== root || (style && style.dataset.lightMode !== String(light))) {
       style?.remove();
       style = null;
     }
     if (!active || !root || style) return;
-    const p = palette(app.settings.value.lightMode === true);
+    const p = palette(light);
     style = document.createElement('style');
     style.dataset.bilibiliAmbilightCompat = 'bewly';
     style.dataset.lightMode = String(light);

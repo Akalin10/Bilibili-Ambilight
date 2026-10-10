@@ -6,7 +6,32 @@
 <header><h1>环境光</h1></header>
 <form id="settings" inert>
 <label class="toggle"><span>启用环境光</span><input id="enabled" type="checkbox"></label>
-<label class="toggle"><span>亮色模式</span><input id="lightMode" type="checkbox"></label>
+<label class="toggle"><span>深色模式</span><input id="darkMode" type="checkbox"></label>
+<details id="auto-details"><summary>深浅色自动切换</summary>
+
+<div id="preferences" inert>
+<label class="toggle"><span>启用自动切换</span><input id="auto" type="checkbox"></label>
+<p class="hint" id="auto-status" role="status" aria-live="polite"></p>
+<div id="mode-panel" hidden>
+<label class="radio"><input type="radio" name="mode" value="sun">日出日落模式</label>
+<label class="radio"><input type="radio" name="mode" value="time">自定义时间</label>
+<div id="sun-fields">
+<button id="locate" type="button">浏览器定位</button>
+<button id="locate-ip" type="button">IP 定位</button>
+<p class="hint" id="location-status" role="status" aria-live="polite"></p>
+<details id="manual-location"><summary>手动填写坐标</summary>
+<label for="coords">纬度, 经度</label><input id="coords" type="text" inputmode="decimal" placeholder="例：31.23, 121.47" autocomplete="off">
+<p class="hint" id="coords-hint"></p>
+</details>
+</div>
+<div id="time-fields" hidden>
+<div class="field"><label for="light-from">浅色开始</label><input id="light-from" type="time"></div>
+<div class="field"><label for="light-to">浅色结束</label><input id="light-to" type="time"></div>
+
+</div>
+</div>
+</div>
+</details>
 <fieldset class="ambient-controls"><legend>环境光效果</legend>
 <div class="control"><label for="blur">模糊 <output id="blur-value" for="blur"></output></label><input id="blur" type="range" min="0" max="100" step="0.1"></div>
 <div class="control"><label for="spread">扩散 <output id="spread-value" for="spread"></output></label><input id="spread" type="range" min="0" max="4" step="0.001"></div>
@@ -22,5 +47,6 @@
 <label for="fpsLimit">帧率上限 <output id="fpsLimit-value"></output></label><input id="fpsLimit" type="range" min="10" max="60" step="1">
 </fieldset></details>
 <footer><button id="reset" type="button">恢复默认</button><span id="status" role="status" aria-live="polite"></span></footer>
-</form><script src="src/settings.js"></script><script src="src/popup.js"></script>
+</form>
+<script src="src/settings.js"></script><script src="src/theme/locations.js"></script><script src="src/theme/solar.js"></script><script src="src/theme/ip-location.js"></script><script src="src/theme/ThemeSchedule.js"></script><script src="src/popup.js"></script>
 </body></html>

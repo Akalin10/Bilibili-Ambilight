@@ -1,17 +1,19 @@
 (() => {
   'use strict';
   const app = globalThis.BilibiliAmbilight = globalThis.BilibiliAmbilight || {};
-  const defaults = Object.freeze({ enabled:true, lightMode:false, strength:0.55, blur:42, spread:1.2,
+  const version = globalThis.chrome?.runtime?.getManifest?.().version || '1.0.4';
+  const defaults = Object.freeze({ enabled:true, darkMode:true, strength:0.55, blur:42, spread:1.2,
     saturation:1.2, brightness:1.08, fadeMs:90, quality:'auto', fpsLimit:60 });
   const limits = { strength:[0,1], blur:[0,100], spread:[0,4], saturation:[0,2],
     brightness:[0.3,2], fadeMs:[0,400], fpsLimit:[10,60] };
-  const listeners=new Set();
-  let value={...defaults};
+  const modeValues = ['manual','sun','time'];
   function normalize(input={}) {
     input=input && typeof input==='object' ? input : {};
     const result={...defaults};
     result.enabled=typeof input.enabled==='boolean' ? input.enabled : defaults.enabled;
-    result.lightMode=typeof input.lightMode==='boolean' ? input.lightMode : defaults.lightMode;
+    result.darkMode=typeof input.darkMode==='boolean' ? input.darkMode
+      : typeof input.lightMode==='boolean' ? !input.lightMode : defaults.darkMode;
+    result.lightMode=!result.darkMode;
     result.quality=['auto','low','medium','high'].includes(input.quality) ? input.quality : defaults.quality;
     for(const [key,[min,max]] of Object.entries(limits)) {
       const n=input[key];
@@ -19,30 +21,100 @@
     }
     return result;
   }
-  function publish(next) {
-    const normalized=normalize(next);
-    if(Object.keys(normalized).every(key=>normalized[key]===value[key]))return;
-    value=normalized;for(const listener of listeners)listener(value);
+
+  const autoDefaults = Object.freeze({ auto:false, mode:'manual',
+    location:null, lightFromMinutes:420, lightToMinutes:1140 });
+  const locationSourceValues = ['geo','ip','manual'];
+  function finiteNumber(input) {
+    if(typeof input==='number')return Number.isFinite(input)?input:null;
+    if(typeof input!=='string' || !input.trim())return null;
+    const value=Number(input);
+    return Number.isFinite(value)?value:null;
   }
-  const storage=globalThis.chrome?.storage;
-  let changedDuringLoad=false;
-  storage?.onChanged.addListener((changes,area) => {
-    if(area==='local' && changes.ambilightSettings) {
-      changedDuringLoad=true; publish(changes.ambilightSettings.newValue);
+  function minuteOfDay(value, fallback) {
+    const minutes=finiteNumber(value);
+    if(minutes===null)return fallback;
+    return Math.round(Math.min(1439,Math.max(0,minutes)));
+  }
+  function coordinate(value, limit) {
+    const number=finiteNumber(value);
+    if(number===null || Math.abs(number)>limit)return null;
+    return number;
+  }
+  function normalizeLocation(input) {
+    const raw=input && typeof input==='object' ? input : {};
+    const latitude=coordinate(raw.latitude,90), longitude=coordinate(raw.longitude,180);
+    if(latitude===null || longitude===null)return null;
+    const at=finiteNumber(raw.at);
+    return {
+      latitude, longitude,
+      source:locationSourceValues.includes(raw.source)?raw.source:'manual',
+      city:typeof raw.city==='string'&&raw.city?raw.city:null,
+      at:at===null?null:Math.round(at),
+    };
+  }
+  function normalizePreferences(input={}) {
+    const raw=input && typeof input==='object' ? input : {};
+    let location=normalizeLocation(raw.location);
+    if(!location)location=normalizeLocation({latitude:raw.latitude, longitude:raw.longitude,
+      source:'manual', at:raw.at});
+    return {
+      auto:raw.auto===true,
+      mode:modeValues.includes(raw.mode)?raw.mode:autoDefaults.mode,
+      location,
+      lightFromMinutes:minuteOfDay(raw.lightFromMinutes ?? raw.lightFrom, autoDefaults.lightFromMinutes),
+      lightToMinutes:minuteOfDay(raw.lightToMinutes ?? raw.lightTo, autoDefaults.lightToMinutes),
+    };
+  }
+
+  function store(key, defaults, normalize, seed) {
+    const storage=globalThis.chrome?.storage;
+    const listeners=new Set();
+    let value=normalize(seed);
+    let changedDuringLoad=false;
+    storage?.onChanged.addListener((changes,area) => {
+      if(area==='local' && changes[key]) {
+        changedDuringLoad=true; publish(changes[key].newValue);
+      }
+    });
+    function publish(next) {
+      const normalized=normalize(next);
+      if(Object.keys(normalized).every(name=>normalized[name]===value[name]))return;
+      value=normalized;for(const listener of listeners)listener(value);
     }
-  });
-  app.settings={ defaults,normalize,
-    get value(){return value;},
-    subscribe(listener){listeners.add(listener);return ()=>listeners.delete(listener);},
-    ready:(async()=>{
-      if(!storage)return;
-      try {const saved=await storage.local.get('ambilightSettings');if(!changedDuringLoad)publish(saved.ambilightSettings);}
-      catch(error){console.warn('[Bilibili Ambilight] 设置读取失败，使用默认值。',error);}
-    })(),
-    async update(patch){
-      const next=normalize({...value,...patch});
-      if(storage)await storage.local.set({ambilightSettings:next});
-      publish(next);
-    },
-  };
+    return {
+      defaults, normalize, key,
+      get value(){return value;},
+      subscribe(listener){listeners.add(listener);return ()=>listeners.delete(listener);},
+      async ready(){
+        if(!storage)return;
+        try {
+          const saved=await storage.local.get(key);
+          if(!changedDuringLoad)publish(saved[key]);
+        } catch(error){console.warn('[Bilibili Ambilight] 设置读取失败，使用默认值。',error);}
+      },
+      async set(patch){
+        const next=normalize({...value,...patch});
+        const changed=Object.keys(next).some(name=>next[name]!==value[name]);
+        if(storage)await storage.local.set({[key]:next});
+        publish(next);
+        return changed;
+      },
+    };
+  }
+
+  const settings=store('ambilightSettings', defaults, normalize);
+  const preferences=store('ambilightPreferences', autoDefaults, normalizePreferences);
+  function expose(name, source) {
+    const target={...source};
+    delete target.value;
+    Object.defineProperty(target,'value',{enumerable:true,get:()=>source.value});
+    app[name]=target;
+  }
+  app.version=version;
+  expose('settings', settings);
+  expose('preferences', preferences);
+  app.settings.update=patch=>app.settings.set(typeof patch?.lightMode==='boolean' && typeof patch.darkMode!=='boolean' ? {...patch,darkMode:!patch.lightMode}:patch);
+  app.settings.ready=settings.ready();
+  app.preferences.ready=preferences.ready();
 })();
