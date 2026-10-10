@@ -32,6 +32,23 @@ input[type=checkbox]{accent-color:var(--accent);cursor:pointer}details{border-bo
 
 select,button{font:inherit;min-height:36px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);padding:6px 10px}select{width:100%;margin:6px 0 12px}button{cursor:pointer}button:hover{background:var(--field-hover)}
 
+.hint{margin:4px 0 10px;font-size:12px;line-height:1.45;color:var(--muted)}
+#auto-status{margin:6px 0 0}
+#locate{width:100%;margin:2px 0 0}
+#location-status{margin:8px 0 6px}
+#manual-location{margin:6px 0 2px;border-bottom:0}
+#manual-location summary{min-height:30px;font-size:13px}
+#manual-location label{font-size:13px;margin-bottom:4px}
+.radio{display:flex;align-items:center;gap:8px;min-height:30px;font-size:13px}
+.radio input{flex:0 0 auto;margin:0}
+.field{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.field label{font-size:13px}
+input[type=time],input[type=text]{font:inherit;min-height:32px;min-width:132px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink)}
+input[type=text]{width:100%;min-width:0;margin-bottom:2px}
+#preferences .toggle{min-height:38px;font-weight:500}
+#mode-panel{margin:2px 0 8px;padding-left:10px;border-left:2px solid var(--line)}
+:is(input,select):disabled{opacity:.55;cursor:not-allowed}
+
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}#status{font-size:12px;color:var(--muted)}
 
 .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

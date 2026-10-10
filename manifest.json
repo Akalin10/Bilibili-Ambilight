@@ -1,9 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Bilibili Ambilight",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "permissions": [
-    "storage"
+    "storage",
+    "geolocation"
+  ],
+  "host_permissions": [
+    "https://ipwho.is/"
   ],
   "icons": {
     "16": "assets/icon-16.png",
@@ -29,6 +33,9 @@
       ],
       "js": [
         "src/settings.js",
+        "src/theme/locations.js",
+        "src/theme/solar.js",
+        "src/theme/ThemeSchedule.js",
         "src/bilibili/player.js",
         "src/ambilight/PerformancePolicy.js",
         "src/ambilight/Projection.js",

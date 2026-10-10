@@ -383,10 +383,26 @@ body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row {
   box-sizing: border-box;
   padding-right: 8px;
 }
+
+/* 弹幕列表面板文字提亮 —— 唯一改动点，勿删。
+   面板三列（时间 / 弹幕内容 / 发送时间）不在发送框作用域内，B 站用的是深色字色。
+   只改文字颜色：不动背景、不动布局、不动发送框。
+   选择器不追加 body 作用域、也不限定嵌套层级——曾经因为多加了外层条件导致整条规则落空。
+   两条规则同时保留：容器自己设色用于继承，后代 * 规则用于压过站点自带的 color / 变量。 */
+:is(.bpx-player-dm-container, .bpx-player-dm-wrap, .bpx-player-dm-management,
+  .bpx-player-dm-list, .bpx-player-dm-history, .bpx-player-dm-seg-wrap) {
+  color: #f4f5f7;
+}
+
+:is(.bpx-player-dm-container, .bpx-player-dm-wrap, .bpx-player-dm-management,
+  .bpx-player-dm-list, .bpx-player-dm-history, .bpx-player-dm-seg-wrap) * {
+  color: #f4f5f7 !important;
+}
 body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row .dm-info-dm {
   flex: 1 1 0 !important;
   min-width: 0;
 }
+/* 弹幕列表里的管理类小按钮（屏蔽/保护/撤回/举报）。 */
 body.bilibili-ambilight-page .bpx-player-dm-container .dm-info-row :is(.dm-info-block-btn, .dm-info-protect-btn, .dm-info-recall-btn, .dm-info-report-btn) {
   position: static !important;
   flex: 0 0 auto;

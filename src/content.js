@@ -8,10 +8,16 @@
   let themeObserver=null;
   const themeLinks=new Map();
   const darkTheme='https://s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/dark.css';
+  // 深色来源：自动切换（按日出日落或自定义时间）优先，未启用时用手动开关。
+  function isDark(active) {
+    if(!active)return false;
+    const auto=app.themeSchedule?.getDark?.();
+    return auto===null || auto===undefined ? app.settings.value.darkMode===true : auto;
+  }
   function syncTheme(active) {
-    const light=active && app.settings.value.lightMode===true;
-    document.documentElement?.classList.toggle('ambilight-light',light);
-    document.body?.classList.toggle('ambilight-light',light);
+    const dark=isDark(active);
+    document.documentElement?.classList.toggle('ambilight-light',!dark);
+    document.body?.classList.toggle('ambilight-light',!dark);
     if(!active) {
       themeObserver?.disconnect();themeObserver=null;
       for(const [link,{href,target}] of themeLinks) {
@@ -26,9 +32,13 @@
         const href=link.getAttribute('href');
         const native=/\/bili-theme\/(?:light|dark)(_u)?\.css(?:[?#]|$)/.exec(link.href);
         if(link.id!=='__css-map__' && !native)continue;
-        const target=native?link.href.replace(/\/(?:light|dark)(_u)?\.css/, '/dark$1.css'):darkTheme;
+        let target=null;
+        if(native)target=link.href.replace(/\/(?:light|dark)(_u)?\.css/, dark?'/dark$1.css':'/light$1.css');
+        else if(dark)target=darkTheme;
+        if(target===null)continue;
         const saved=themeLinks.get(link);
         if(!saved || href!==saved.target)themeLinks.set(link,{href,target});
+        // 只在真正需要改写时赋值，避免与下面的 MutationObserver 互相触发。
         if(link.href!==target)link.setAttribute('href',target);
       }
     };
@@ -82,6 +92,8 @@
     if(stopped)return;
     instance?.applySettings(settings);queue();
   });
+  // 自动切换判定结果变化时（含跨过日出/日落/自定义时间点）立即重新应用主题。
+  document.addEventListener('ambilight-theme-change',()=>{if(!stopped)queue();});
   document.addEventListener('fullscreenchange',queue);
   window.addEventListener('popstate',queue);
   window.addEventListener('pagehide',()=>{
@@ -95,4 +107,6 @@
   });
   window.addEventListener('pageshow',event=>{if(event.persisted)start();});
   app.settings.ready.then(()=>{if(!stopped)start();});
+  // 手动临时覆盖写在 storage 里，页面加载时要恢复（弹窗可能早已关闭）。
+  app.themeSchedule?.restore?.().then(restored=>{if(restored && !stopped)queue();});
 })();
